@@ -20,7 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(BASE_DIR / '.env')
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -79,7 +78,7 @@ WSGI_APPLICATION = 'what_eat_today.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(),  # читаем DATABASE_URL
+    'default': env.db(default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
 }
 
 
