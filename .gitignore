@@ -14,8 +14,8 @@ dist/
 
 # Virtual environments
 venv/
-.env/                # если виртуалка в папке .env
-.env                 # файл с переменными окружения
+.env/                
+.env                
 env/
 .venv/
 .env
@@ -26,11 +26,6 @@ local_settings.py
 db.sqlite3
 media/
 staticfiles/
-
-# Migrations
-*/migrations/*.py
-*/migrations/*.pyc
-!*/migrations/__init__.py
 
 # VSCode
 .vscode/
