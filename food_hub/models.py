@@ -108,6 +108,7 @@ class ProductRating(models.Model):
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Рейтинг продукта'
+        verbose_name_plural = 'Рейтинги продуктов'
         indexes = [
             models.Index(fields=['rate', 'updated_at', 'created_at']),
         ]
