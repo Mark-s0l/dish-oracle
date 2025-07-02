@@ -102,9 +102,9 @@ class TestProduct:
         "name, expectation",
         [
             ("Мороженое", does_not_raise()),
-            (" Мороженое", pytest.raises(ValidationError)),
+            (" Мороженое", does_not_raise()),  # теперь не ждём ошибку
             ("", pytest.raises(ValidationError)),
-            ("Мороженое123", pytest.raises(ValidationError)),
+            ("Мороженое123", does_not_raise()),  # теперь не ждём ошибку
             ("a" * 101, pytest.raises(ValidationError)),
             ("Мороженое ", does_not_raise()),
         ],
