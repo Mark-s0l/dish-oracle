@@ -4,7 +4,12 @@ from django.db import models
 from django.urls import reverse
 from stdnum import ean
 
-from food_hub.validators import ean13_validator, fields_name_validator, slug_validator
+from food_hub.validators import (
+    ean13_validator,
+    fields_name_validator,
+    slug_validator,
+    field_name_product,
+)
 
 
 def valid_ean13(value):
@@ -119,7 +124,7 @@ class Product(models.Model):
     name = models.CharField(
         max_length=100,
         help_text="Название продукта",
-        validators=[fields_name_validator],
+        validators=[field_name_product],
     )
     ean_code = models.CharField(
         max_length=13,

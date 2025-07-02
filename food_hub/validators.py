@@ -10,3 +10,8 @@ ean13_validator = RegexValidator(
 )
 
 slug_validator = RegexValidator(regex=r"^[a-zA-Zа-яА-ЯёЁ\s]+$")
+
+field_name_product = RegexValidator(
+    "^[A-Za-zА-Яа-яЁё0-9\s,.\-%«»\"'()]+$",
+    message="Название может содержать буквы, цифры, пробелы и знаки , . - % ( ) « » ' \"",
+)
