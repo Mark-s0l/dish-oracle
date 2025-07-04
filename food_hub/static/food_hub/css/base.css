@@ -1,0 +1,16 @@
+/* Устанавливаем высоту для html и body */
+html, body {
+  min-height: 100vh;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  color: #3e3a35;
+  font-size: 18px;
+}
+
+/* Фон */
+body {
+  background: #e3f7e1 url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%23e3f7e1' width='100%25' height='100%25'/%3E%3Ccircle fill='%23b6e2b3' cx='25%25' cy='30%25' r='120'/%3E%3Ccircle fill='%23d0f5c7' cx='70%25' cy='40%25' r='180'/%3E%3Ccircle fill='%23b7e6c1' cx='40%25' cy='80%25' r='100'/%3E%3Ccircle fill='%239fd6a3' cx='80%25' cy='85%25' r='140'/%3E%3C/svg%3E") no-repeat center/cover fixed;
+}

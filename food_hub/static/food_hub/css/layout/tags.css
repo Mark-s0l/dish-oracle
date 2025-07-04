@@ -1,0 +1,13 @@
+/* Цвета тегов */
+.tag[data-type="sweet"]   { border-color: #d48181; color: #d48181; }
+.tag[data-type="salty"]   { border-color: #5b5957; color: #5b5957; }
+.tag[data-type="soft"]    { border-color: #689f38; color: #689f38; }
+.tag[data-type="juicy"]   { border-color: #2196f3; color: #2196f3; }
+.tag[data-type="bad"]     { border-color: #8e6c6c; color: #8e6c6c; }
+.tag[data-type="sour"]    { border-color: #c5aa1f; color: #c5aa1f; }
+.tag[data-type="milky"]   { border-color: #8e24aa; color: #8e24aa; }
+.tag[data-type="bitter"]  { border-color: #5d4037; color: #5d4037; }
+.tag[data-type="minty"]   { border-color: #4caf50; color: #4caf50; }
+.tag[data-type="hrustyashij"] { border-color: #388e3c; color: #388e3c; }
+.tag[data-type="spicy"]   { border-color: #9b2d30; color: #9b2d30; }
+.tag[data-type="vanilnyj"] { border-color: #D6AE01; color: #D6AE01; }

@@ -1,0 +1,189 @@
+/* Контейнер */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 6px 70px 6px;
+  box-sizing: border-box;
+}
+
+/* Карточка */
+.product-card {
+  background: rgba(253,250,246,0.65);
+  border-radius: 22px;
+  padding: 18px 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+/* Внутри карточки */
+.card-content {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+/* Изображение */
+.product-image {
+  flex: 0 0 140px;
+  width: 140px;
+  height: 140px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.rating {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: #fff;
+  color: #ffd500;
+  border-radius: 999px;
+  font-size: 22px;
+  padding: 3px 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Информация */
+.product-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.product-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 7px;
+  word-break: break-word;
+}
+.company-name {
+  font-size: 16px;
+  color: #6a5f54;
+  word-break: break-word;
+}
+
+/* Теги */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  margin-bottom: 12px;
+}
+.tag {
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-weight: bold;
+  font-size: 15px;
+  background: #fff;
+  color: #3e3a35;
+  transition: transform 0.18s, box-shadow 0.22s;
+  line-height: 1.2;
+  display: inline-block;
+  cursor: pointer;
+}
+.tag:hover {
+  transform: scale(1.07);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.09);
+}
+
+/* Фиксированный футер */
+.fixed-footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #FFFFFF;
+  border-top: 3px solid #4E5754;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+.fixed-footer ul {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  height: 54px;
+}
+.fixed-footer li { flex: 1; text-align: center; }
+.fixed-footer a, .fixed-footer i, .fixed-footer svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.fixed-footer a {
+  color: #287233;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 12px 0;
+  transition: color 0.2s;
+  outline: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent; /* убирает синий фон на iOS/Android */
+}
+.fixed-footer svg {
+  width: 28px;
+  height: 28px;
+  stroke: #287233 !important; /* основной зелёный контур */
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s, fill 0.2s, transform 0.12s;
+  display: inline-block;
+  vertical-align: middle;
+}
+.fixed-footer a:hover {
+  color: #d48181;
+}
+.fixed-footer a:hover svg {
+  stroke: #1e4d23 !important; /* тёмно-зелёный при наведении */
+}
+.fixed-footer a:active svg,
+.fixed-footer a:focus svg {
+  transform: scale(1.18);
+  stroke: #43a047 !important; /* ярко-зелёный при нажатии */
+}
+.fixed-footer a.active svg {
+  transform: scale(1.18);
+  stroke: #43a047 !important;
+}
+.fixed-footer a:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* --- Адаптивность --- */
+@media (max-width: 600px) {
+  body { background-attachment: scroll; }
+  .container { padding: 0 8px 70px 8px; gap: 14px; }
+  .product-card {
+    background: rgba(253,250,246,0.72);
+    padding: 12px 10px;
+    border-radius: 16px;
+  }
+  .card-content { flex-direction: row; gap: 12px; align-items: flex-start; }
+  .product-image {
+    flex: 0 0 100px;
+    width: 100px; height: 100px; border-radius: 10px;
+  }
+  .product-info { flex: 1; }
+  .rating { font-size: 16px; padding: 3px 8px; }
+  .product-name { font-size: 17px; }
+  .company-name { font-size: 14px; }
+  .tags { margin-bottom: 6px; }
+  .tag { font-size: 13px; padding: 4px 8px; border-radius: 10px; }
+}
