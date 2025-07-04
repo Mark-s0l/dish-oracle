@@ -6,9 +6,9 @@ from stdnum import ean
 
 from food_hub.validators import (
     ean13_validator,
+    field_name_product,
     fields_name_validator,
     slug_validator,
-    field_name_product,
 )
 
 
@@ -49,7 +49,6 @@ class TasteTag(models.Model):
         help_text="Тип тега вкуса (положительный или отрицательный)",
     )
     slug = models.SlugField(max_length=50, unique=True, validators=[slug_validator])
-    # Используется для CSS-селекторов на фронте, не для URL
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -66,6 +65,9 @@ class TasteTag(models.Model):
 
     def __str__(self):
         return f"{self.name} [{self.get_taste_type_display()}]"
+
+    def get_absolute_url(self):
+        return reverse("taste_tag_sort", kwargs={"slug": self.slug})
 
 
 class Category(models.Model):
