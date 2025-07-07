@@ -11,6 +11,7 @@ urlpatterns = [
         views.ProductsView.as_view(),
         name="product_list_by_tag",
     ),
+    path("list/search/", views.ProductSearchView.as_view(), name="product_search"),
 ]
 
 # Для разработки: отдача медиафайлов через Django

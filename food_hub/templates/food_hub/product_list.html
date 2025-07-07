@@ -4,17 +4,32 @@
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'food_hub/css/product_list.css' %}">
   <link rel="stylesheet" href="{% static 'food_hub/css/layout/tags.css' %}">
+  <link rel="stylesheet" href="{% static 'food_hub/css/footer.css' %}">
+  <link rel="stylesheet" href="{% static 'food_hub/css/search_bar.css' %}">
 {% endblock %}
 {% block content %}
+<div class="search-bar-fixed">
+  <form action="{% url 'product_search' %}" method="get">
+    <div class="input-wrapper">
+      <input type="text" name="query" placeholder="Введите запрос" value="{{ query }}">
+      <button type="submit" class="icon-button">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="17" y1="17" x2="22" y2="22"/>
+        </svg>
+      </button>
+    </div>
+  </form>
+</div>
   <div class="container">
     {% for product in products %}
       <div class="product-card">
         <div class="tags">
             {% for rating in product.ratings.all %}
               {% for tag in rating.taste_tags.all %}
-                <a href="{% url 'product_list_by_tag' slug=tag.slug %}">
-                  <span class="tag" data-type="{{ tag.slug }}">#{{ tag.name }}</span>
-                </a>
+                  <a href="{% url 'product_list_by_tag' slug=tag.slug %}">
+                    <span class="tag" data-type="{{ tag.slug }}">#{{ tag.name }}</span>
+                  </a>
               {% endfor %}
             {% endfor %}
         </div>
@@ -27,7 +42,6 @@
             {% endfor %}
           </div>
           <div class="product-info">
-            
             <div class="product-name">{{ product.name }}</div>
             <div class="company-name">{{ product.company.name }}</div>
           </div>
