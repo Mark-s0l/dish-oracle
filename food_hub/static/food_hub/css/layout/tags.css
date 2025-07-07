@@ -1,3 +1,26 @@
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  margin-bottom: 12px;
+}
+.tag {
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-weight: bold;
+  font-size: 15px;
+  background: #fff;
+  color: #3e3a35;
+  transition: transform 0.18s, box-shadow 0.22s;
+  line-height: 1.2;
+  display: inline-block;
+  cursor: pointer;
+}
+.tag:hover {
+  transform: scale(1.07);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.09);
+}
 /* Цвета тегов */
 .tag[data-type="sweet"]   { border-color: #d48181; color: #d48181; }
 .tag[data-type="salty"]   { border-color: #5b5957; color: #5b5957; }

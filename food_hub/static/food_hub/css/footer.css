@@ -1,0 +1,61 @@
+/* Фиксированный футер */
+.fixed-footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #FFFFFF;
+  border-top: 3px solid #4E5754;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+.fixed-footer ul {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  height: 54px;
+}
+.fixed-footer li { flex: 1; text-align: center; }
+.fixed-footer a, .fixed-footer i, .fixed-footer svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.fixed-footer a {
+  color: #287233;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 12px 0;
+  transition: color 0.2s;
+  outline: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.fixed-footer svg {
+  width: 28px;
+  height: 28px;
+  stroke: #287233 !important; /* основной зелёный контур */
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s, fill 0.2s, transform 0.12s;
+  display: inline-block;
+  vertical-align: middle;
+}
+.fixed-footer a:hover {
+  color: #d48181;
+}
+.fixed-footer a:active svg,
+.fixed-footer a:focus svg {
+  transform: scale(1.18);
+  stroke: #43a047 !important; /* ярко-зелёный при нажатии */
+}
+.fixed-footer a.active svg {
+  transform: scale(1.18);
+  stroke: #43a047 !important;
+}
+.fixed-footer a:focus {
+  outline: none;
+  box-shadow: none;
+}
