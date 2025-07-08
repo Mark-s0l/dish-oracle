@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'food_hub/css/footer.css' %}">
+{% endblock %}
+{% block title %}Добавление продукта{% endblock %}
+
+{% block content %}
+  <h1>Добавить товар по EAN</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Проверить</button>
+  </form>
+{% block footer %}
+  {% include 'base.html' %}
+{% endblock %}
+{% endblock %}

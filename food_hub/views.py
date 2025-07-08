@@ -1,11 +1,10 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.views.generic import ListView
 from django.views.generic.base import TemplateView
-
-from food_hub.models import Product
-
-from .forms import SearchForm
-from .models import Product
+from food_hub.forms import SearchForm, AddProductForm
+from food_hub.models import Product, Category, Company, Country
+from food_hub.services import fetch_product_data
+from django.shortcuts import render
 
 
 class ProductsView(TemplateView):
@@ -47,3 +46,29 @@ class ProductSearchView(ListView):
         context["form"] = self.form
         context["query"] = self.request.GET.get("query", "")
         return context
+
+def add_product(request, ):
+    if request.method == 'POST':
+        form = AddProductForm(request.POST)
+        if form.is_valid():
+            ean_code = form.cleaned_data['ean_code']
+            api_response = fetch_product_data(ean_code)
+            if api_response is not None:
+                try:
+                    product = Product.objects.get(ean_code=ean_code)
+                    return render(request, 'food_hub/checkproduct.html', {'product': product})
+                except Product.DoesNotExist:
+                    country_obj, created = Country.objects.get_or_create(name=api_response["country"])
+                    company_obj, created = Company.objects.get_or_create(name=api_response["company"],
+                                                                country=country_obj)
+                    category_obj, created = Category.objects.get_or_create(name=api_response["category"])
+                    product = Product.objects.create(name=api_response["name"],
+                                            ean_code=form.cleaned_data["ean_code"],
+                                            category=category_obj,
+                                            company=company_obj)
+                    return render(request, 'food_hub/checkproduct.html', {'product': product})
+            else:
+                error_message = "Извините, в данный момент сервис не доступен. Пожалуйста, попробуйте позже."
+                return render(request, 'food_hub/checkproduct.html', {'error_message': error_message})
+    form = AddProductForm()
+    return render(request, 'food_hub/add_product.html', {'form': form})

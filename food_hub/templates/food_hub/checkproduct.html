@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'food_hub/css/footer.css' %}">
+{% endblock %}
+{% block title %}Добавление продукта{% endblock %}
+
+{% block content %}
+  {% if error_message %}
+    <div class="alert alert-danger">
+      {{ error_message }}
+    </div>
+  {% else %}
+    <h1>Информация о добавленном товаре</h1>
+    <ul>
+      <li><strong>Название:</strong> {{ product.name }}</li>
+  {% endif %}
+{% endblock %}
