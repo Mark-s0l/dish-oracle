@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}{% endblock %}
+{% block title %}Список продуктов{% endblock %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'food_hub/css/product_list.css' %}">
   <link rel="stylesheet" href="{% static 'food_hub/css/layout/tags.css' %}">
@@ -35,8 +35,11 @@
         </div>
         <div class="card-content">
           <div class="product-image">
-            <img src="{{ product.img_field.url }}"
-                 alt="Фото продукта">
+              {% if product.img_field %}
+                <img src="{{ product.img_field.url }}" alt="Фото продукта">
+              {% else %}
+                <img src="{% static 'images/default.png' %}" alt="Нет фото">
+              {% endif %}
             {% for rating in product.ratings.all %}
             <div class="rating">{{ rating.rate }}★</div>
             {% endfor %}
@@ -48,36 +51,8 @@
         </div>
       </div>
     {% endfor %}
-  </div>
-  <div class="fixed-footer">
-  <ul>
-    <li>
-      <a href="{% url 'product_list' %}" title="Главная"
-         class="{% if request.path == '/list/' %}active{% endif %}">
-        <svg viewBox="0 0 24 24">
-          <path d="M3 10L12 3L21 10V21H3V10Z"/>
-        </svg>
-      </a>
-    </li>
-    <li>
-      <a href="#" title="Создать"
-      class="{% if request.path == '/#' %}active{% endif %}">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 5V19M5 12H19"/>
-        </svg>
-      </a>
-    </li>
-    <li>
-      <a href="#" title="Контакты"
-      class="{% if request.path == '/#' %}active{% endif %}">
-        <svg viewBox="0 0 24 24">
-          <path d="M21 10.5V6A2 2 0 0 0 19 4H5A2 2 0 0 0 3 6V18A2 2 0 0 0 5 20H19A2 2 0 0 0 21 18V13.5"/>
-          <path d="M16 3.5V7.5"/>
-          <path d="M8 3.5V7.5"/>
-        </svg>
-      </a>
-    </li>
-  </ul>
-</div>
+{% block footer %}
+  {% include 'base.html' %}
+{% endblock %}
 {% endblock %}
 </html>
