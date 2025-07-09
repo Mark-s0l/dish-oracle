@@ -5,6 +5,8 @@ from food_hub.forms import SearchForm, AddProductForm
 from food_hub.models import Product, Category, Company, Country
 from food_hub.services import fetch_product_data
 from django.shortcuts import render
+from django.views.generic.edit import FormView
+from django.db import transaction
 
 
 class ProductsView(TemplateView):
@@ -47,28 +49,38 @@ class ProductSearchView(ListView):
         context["query"] = self.request.GET.get("query", "")
         return context
 
-def add_product(request, ):
-    if request.method == 'POST':
-        form = AddProductForm(request.POST)
-        if form.is_valid():
-            ean_code = form.cleaned_data['ean_code']
-            api_response = fetch_product_data(ean_code)
-            if api_response is not None:
-                try:
-                    product = Product.objects.get(ean_code=ean_code)
-                    return render(request, 'food_hub/checkproduct.html', {'product': product})
-                except Product.DoesNotExist:
-                    country_obj, created = Country.objects.get_or_create(name=api_response["country"])
-                    company_obj, created = Company.objects.get_or_create(name=api_response["company"],
-                                                                country=country_obj)
-                    category_obj, created = Category.objects.get_or_create(name=api_response["category"])
-                    product = Product.objects.create(name=api_response["name"],
-                                            ean_code=form.cleaned_data["ean_code"],
-                                            category=category_obj,
-                                            company=company_obj)
-                    return render(request, 'food_hub/checkproduct.html', {'product': product})
-            else:
-                error_message = "Извините, в данный момент сервис не доступен. Пожалуйста, попробуйте позже."
-                return render(request, 'food_hub/checkproduct.html', {'error_message': error_message})
-    form = AddProductForm()
-    return render(request, 'food_hub/add_product.html', {'form': form})
+class AddProductView(FormView):
+    template_name = 'food_hub/add_product.html'
+    form_class = AddProductForm
+
+    def _show_product(self, context):
+        return render(self.request, 'food_hub/checkproduct.html', context)
+
+    def form_valid(self, form):
+        ean = form.cleaned_data['ean_code']
+        try:
+            product = Product.objects.get(ean_code=ean)
+            return self._show_product({'product': product})
+        except Product.DoesNotExist:
+            pass
+
+        api_data = fetch_product_data(ean)
+        if not api_data:
+            return self._show_product({'error_message': "Сервис недоступен"})
+
+        with transaction.atomic():
+            country, _  = Country.objects.get_or_create(name=api_data['country'])
+            company, _  = Company.objects.get_or_create(
+                name=api_data['company'], country=country
+            )
+            category, _ = Category.objects.get_or_create(name=api_data['category'])
+
+            product = Product.objects.create(
+                name=api_data['name'],
+                ean_code=ean,
+                category=category,
+                company=company,
+                img_field=api_data.get('image_path') 
+            )
+
+        return self._show_product({'product': product})
