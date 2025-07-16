@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from stdnum import ean
 
-from food_hub.validators import (
+from food_hub.utils.validators import (
     ean13_validator,
     field_name_product,
     fields_name_validator,
