@@ -1,6 +1,7 @@
 import os
 
 import requests
+from food_hub.utils.product_categories import find_category
 from django.conf import settings
 
 
@@ -51,11 +52,14 @@ def fetch_product_data(ean_code):
         if image_url
         else None
     )
+    
+    category = safe_get(data, "categories", 0, "titles", "ru")
+    category = find_category(category)
 
     return {
         "name": safe_get(data, "titles", "ru") or safe_get(data, "titles", "en"),
         "company": safe_get(data, "manufacturer", "titles", "ru"),
         "country": safe_get(data, "barcodeDetails", "country"),
-        "category": safe_get(data, "categories", 0, "titles", "ru"),
+        "category": category,
         "image_path": image_path,
     }
