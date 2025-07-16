@@ -1,0 +1,15 @@
+<form method="post" action="{% url 'save_rating' %}">
+  {% csrf_token %}
+  <input type="hidden" name="product_id" value="{{ product_id }}">
+  <input type="hidden" name="rate" value="{{ rate }}">
+
+  <p>Выберите теги:</p>
+  {% for tag in tags %}
+    <label>
+      <input type="checkbox" name="tags" value="{{ tag.pk }}">
+      {{ tag.name }}
+    </label><br>
+  {% endfor %}
+
+  <button type="submit">Сохранить</button>
+</form>
