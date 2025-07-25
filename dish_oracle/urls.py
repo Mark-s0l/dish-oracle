@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls), path("", include("food_hub.urls")),
     path('list/', include('food_hub.urls', namespace='food_hub')),
     path('search/', include('search_hub.urls', namespace='search_hub')),
+    path('add/', include('add_food.urls', namespace='add_food')),
     ]

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "food_hub",
     "search_hub",
+    "add_food",
     "django.contrib.postgres",
 ]
 

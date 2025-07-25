@@ -1,16 +1,12 @@
-from django.contrib.postgres.search import (SearchQuery, SearchRank,
-                                            SearchVector)
+
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.generic import ListView
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
 
-from food_hub.forms import AddProductForm, SearchForm
-from food_hub.models import (Category, Company, Country, Product,
+from food_hub.models import (Product,
                              ProductRating, TasteTag)
-from food_hub.utils.services import fetch_product_data
+
 from food_hub.utils.tags_choose import choose_taste_tags
 
 
@@ -25,41 +21,6 @@ class ProductsView(TemplateView):
             products = products.filter(ratings__taste_tags__slug=tag_slug)
         context["products"] = products
         return context
-
-class AddProductView(FormView):
-    template_name = "food_hub/add_product.html"
-    form_class = AddProductForm
-
-    def form_valid(self, form):
-        ean = form.cleaned_data["ean_code"]
-        try:
-            product = Product.objects.get(ean_code=ean)
-        except Product.DoesNotExist:
-            api_data = fetch_product_data(ean)
-            if not api_data:
-                return render(
-                    self.request,
-                    "food_hub/add_product.html",
-                    {"error_message": "Сервис недоступен"},
-                )
-
-            with transaction.atomic():
-                country, _ = Country.objects.get_or_create(name=api_data["country"])
-                company, _ = Company.objects.get_or_create(
-                    name=api_data["company"], country=country
-                )
-                category, _ = Category.objects.get_or_create(name=api_data["category"])
-
-                product = Product.objects.create(
-                    name=api_data["name"],
-                    ean_code=ean,
-                    category=category,
-                    company=company,
-                    img_field=api_data.get("image_path"),
-                )
-
-        return redirect("add_rating", product_id=product.pk)
-
 
 class AddRatingView(View):
     def get(self, request, **kwargs):
@@ -92,4 +53,4 @@ class SaveRatingView(View):
             rating_obj = ProductRating.objects.create(product=product, rate=rate)
             rating_obj.taste_tags.set(tags)
 
-        return redirect("product_list")
+        return redirect("food_hub:product_list")

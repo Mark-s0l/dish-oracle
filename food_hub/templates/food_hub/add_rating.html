@@ -18,7 +18,7 @@
   {% for i in "12345" %}
     <label>
       <input type="radio" name="rate" value="{{ i }}"
-             hx-post="{% url 'add_rating' product.id %}"
+             hx-post="{% url 'food_hub:add_rating' product.id %}"
              hx-target="#tags-container"
              hx-swap="innerHTML"
              hx-include="#rating-form">
