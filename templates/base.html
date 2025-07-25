@@ -16,7 +16,7 @@
       <div class="fixed-footer">
   <ul>
     <li>
-      <a href="{% url 'product_list' %}" title="Главная"
+      <a href="{% url 'food_hub:product_list' %}" title="Главная"
          class="{% if request.path == '/list/' %}active{% endif %}">
         <svg viewBox="0 0 24 24">
           <path d="M3 10L12 3L21 10V21H3V10Z"/>
@@ -24,7 +24,7 @@
       </a>
     </li>
     <li>
-      <a href="{% url 'add_product' %}" title="Создать"
+      <a href="{% url 'food_hub:add_product' %}" title="Создать"
       class="{% if request.path == '/#' %}active{% endif %}">
         <svg viewBox="0 0 24 24">
           <path d="M12 5V19M5 12H19"/>

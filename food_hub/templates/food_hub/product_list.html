@@ -8,26 +8,14 @@
   <link rel="stylesheet" href="{% static 'food_hub/css/search_bar.css' %}">
 {% endblock %}
 {% block content %}
-<div class="search-bar-fixed">
-  <form action="{% url 'product_search' %}" method="get">
-    <div class="input-wrapper">
-      <input type="text" name="query" placeholder="Введите запрос" value="{{ query }}">
-      <button type="submit" class="icon-button">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="17" y1="17" x2="22" y2="22"/>
-        </svg>
-      </button>
-    </div>
-  </form>
-</div>
+{% include 'search_hub/partials/search_bar.html' %}
   <div class="container">
     {% for product in products %}
       <div class="product-card">
         <div class="tags">
             {% for rating in product.ratings.all %}
               {% for tag in rating.taste_tags.all %}
-                  <a href="{% url 'product_list_by_tag' slug=tag.slug %}">
+                  <a href="{% url 'food_hub:product_list_by_tag' slug=tag.slug %}">
                     <span class="tag" data-type="{{ tag.slug }}">#{{ tag.name }}</span>
                   </a>
               {% endfor %}
@@ -51,8 +39,5 @@
         </div>
       </div>
     {% endfor %}
-{% block footer %}
-  {% include 'base.html' %}
-{% endblock %}
 {% endblock %}
 </html>

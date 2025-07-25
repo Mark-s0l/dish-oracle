@@ -4,14 +4,15 @@ from django.urls import path
 
 from food_hub import views
 
+app_name = 'food_hub'
+
 urlpatterns = [
-    path("list/", views.ProductsView.as_view(), name="product_list"),
+    path("", views.ProductsView.as_view(), name="product_list"),
     path(
         "list/tag/<slug:slug>/",
         views.ProductsView.as_view(),
         name="product_list_by_tag",
     ),
-    path("list/search/", views.ProductSearchView.as_view(), name="product_search"),
     path('list/add/', views.AddProductView.as_view(), name='add_product'),
     path('list/add_rating/<int:product_id>/', views.AddRatingView.as_view(), name='add_rating'),
     path('list/save_rating/', views.SaveRatingView.as_view(), name='save_rating'),
