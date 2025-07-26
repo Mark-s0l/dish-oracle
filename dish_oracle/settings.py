@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "food_hub",
     "search_hub",
     "add_food",
+    "rate_food",
     "django.contrib.postgres",
 ]
 

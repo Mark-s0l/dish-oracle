@@ -6,11 +6,6 @@
 {% block title %}Добавление продукта{% endblock %}
 
 {% block content %}
-  {% if error_message %}
-    <div class="alert-danger">
-      {{ error_message }}
-    </div>
-  {% else %}
 <form id="rating-form">
   {% csrf_token %}
   <p>Оцените продукт:</p>
@@ -18,14 +13,13 @@
   {% for i in "12345" %}
     <label>
       <input type="radio" name="rate" value="{{ i }}"
-             hx-post="{% url 'food_hub:add_rating' product.id %}"
+             hx-post="{% url 'rate_food:add_rate' product.id %}"
              hx-target="#tags-container"
              hx-swap="innerHTML"
              hx-include="#rating-form">
       {{ i }} звёзд
     </label><br>
   {% endfor %}
-{% endif %}
   <div id="tags-container"></div>
 </form>
 {% endblock %}

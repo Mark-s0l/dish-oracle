@@ -38,4 +38,4 @@ class AddProductView(FormView):
                     img_field=api_data.get("image_path"),
                 )
 
-        return redirect("food_hub:add_rating", product_id=product.pk)
+        return redirect("rate_food:add_rate", product_id=product.pk)

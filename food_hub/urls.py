@@ -13,9 +13,6 @@ urlpatterns = [
         views.ProductsView.as_view(),
         name="product_list_by_tag",
     ),
-    path('list/add_rating/<int:product_id>/', views.AddRatingView.as_view(), name='add_rating'),
-    path('list/save_rating/', views.SaveRatingView.as_view(), name='save_rating'),
-
 ]
 
 # Для разработки: отдача медиафайлов через Django
