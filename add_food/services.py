@@ -1,7 +1,7 @@
 import os
 
 import requests
-from food_hub.utils.product_categories import find_category
+from add_food.product_categories import find_category
 from django.conf import settings
 
 

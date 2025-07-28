@@ -2,7 +2,7 @@ from django.views import View
 from django.shortcuts import get_object_or_404, redirect, render
 from food_hub.models import (Product,
                              ProductRating, TasteTag)
-from food_hub.utils.tags_choose import choose_taste_tags
+from rate_food.tags_choose import choose_taste_tags
 from django.db import transaction
 
 
