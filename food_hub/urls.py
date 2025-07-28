@@ -9,7 +9,7 @@ app_name = 'food_hub'
 urlpatterns = [
     path("", views.ProductsView.as_view(), name="product_list"),
     path(
-        "list/tag/<slug:slug>/",
+        "tag/<slug:slug>/",
         views.ProductsView.as_view(),
         name="product_list_by_tag",
     ),
