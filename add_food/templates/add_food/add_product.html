@@ -4,12 +4,15 @@
 
 {% block content %}
   <h1>Добавить товар по EAN</h1>
+  {% if error_message %}
+    <div class="alert alert-danger">
+      {{ error_message }}
+    </div>
+  {% else %}
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Проверить</button>
   </form>
-{% block footer %}
-  {% include 'base.html' %}
-{% endblock %}
+  {% endif %}
 {% endblock %}
