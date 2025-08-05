@@ -1,4 +1,4 @@
-from food_hub.forms import AddProductForm
+from add_food.forms import AddProductForm
 from django.views.generic.edit import FormView
 from food_hub.models import Product, Country, Company, Category
 from add_food.services import fetch_product_data
@@ -19,7 +19,7 @@ class AddProductView(FormView):
             if not api_data:
                 return render(
                     self.request,
-                    "food_hub/add_product.html",
+                    "add_food/add_product.html",
                     {"error_message": "Сервис недоступен"},
                 )
 

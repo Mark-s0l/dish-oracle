@@ -2,7 +2,7 @@ from django.contrib.postgres.search import (SearchQuery, SearchRank,
                                             SearchVector)
 from django.views.generic import ListView
 
-from food_hub.forms import SearchForm
+from search_hub.forms import SearchForm
 from food_hub.models import Product
 
 
