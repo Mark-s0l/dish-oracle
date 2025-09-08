@@ -1,3 +1,6 @@
+'''Был реализован лишь полнотекстовый поиск и incontains,
+поскольку триаграммы не справлялись с задачей - получение валидного результата за первые 3-4 символа
+при расширении базы данных потребуется пересмотреть использование incontains.'''
 from django.contrib.postgres.search import (SearchQuery, SearchRank,
                                             SearchVector)
 from django.views.generic import ListView
@@ -12,21 +15,23 @@ class ProductSearchView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        self.form = SearchForm(self.request.GET)
-        if self.form.is_valid():
-            query = self.form.cleaned_data["query"]
-            search_vector = SearchVector("name", "company", config="russian")
-            search_query = SearchQuery(query, config="russian")
-            return (
-                Product.objects.annotate(
-                    search=search_vector, rank=SearchRank(search_vector, search_query)
-                )
-                .filter(search=search_query)
-                .order_by("-rank")
-            )
-        else:
+        self.form = SearchForm(self.request.GET) 
+        if self.form.is_valid(): 
+            query = self.form.cleaned_data["query"] 
+            search_vector = (SearchVector("name", weight="A", config="russian") +
+                            SearchVector("company__name", weight="B", config="russian") +
+                            SearchVector("category__name", weight="C", config="russian")) 
+            search_query = SearchQuery(query, config="russian") 
+            results = ( Product.objects.annotate( 
+                                                search=search_vector, 
+                                                rank=SearchRank(search_vector, 
+                                                                search_query), )
+                    ).filter(search=search_query).order_by("-rank") 
+            if not results.exists():
+                return Product.objects.filter(name__icontains=query) 
+            return results 
+        else: 
             return Product.objects.none()
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = self.form

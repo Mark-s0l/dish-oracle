@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from stdnum import ean
+from django.contrib.postgres.indexes import GinIndex
 
 from food_hub.utils.validators import (
     ean13_validator,
@@ -82,6 +83,9 @@ class Category(models.Model):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
+        indexes = [
+            GinIndex(fields=["name"]),
+        ]
 
     def __str__(self):
         return self.name
@@ -115,6 +119,9 @@ class Company(models.Model):
     class Meta:
         verbose_name = "Компания"
         verbose_name_plural = "Компании"
+        indexes = [
+            GinIndex(fields=["name"]),
+        ]
 
     def __str__(self):
         return self.name
@@ -143,7 +150,7 @@ class Product(models.Model):
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         indexes = [
-            models.Index(fields=["name"]),
+            GinIndex(fields=["name"]),
         ]
         constraints = [
             models.UniqueConstraint(
