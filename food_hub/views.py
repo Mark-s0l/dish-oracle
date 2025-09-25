@@ -1,5 +1,6 @@
 from django.views.generic.base import TemplateView
 from food_hub.models import Product
+from django.contrib.postgres.aggregates import ArrayAgg
 
 
 class ProductsView(TemplateView):
@@ -7,10 +8,7 @@ class ProductsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        products = Product.objects.prefetch_related("ratings__taste_tags")
-        tag_slug = self.kwargs.get("slug")
-        if tag_slug:
-            products = products.filter(ratings__taste_tags__slug=tag_slug)
+        products = Product.objects.select_related('company').annotate(
+            tag_names=ArrayAgg('ratings__taste_tags__name', distinct=True))
         context["products"] = products
         return context
-
