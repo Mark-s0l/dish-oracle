@@ -1,42 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Список продуктов{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'food_hub/css/product_list.css' %}">
+  <link rel="stylesheet" href="{% static 'food_hub/css/product_card.css' %}">
   <link rel="stylesheet" href="{% static 'food_hub/css/layout/tags.css' %}">
-  <link rel="stylesheet" href="{% static 'search_hub/css/search_bar.css' %}">
 {% endblock %}
+{% block title %}Список продуктов{% endblock %}
 {% block content %}
-{% include 'search_hub/partials/search_bar.html' %}
-  <div class="container">
+  <div class="product-card">
     {% for product in products %}
-      <div class="product-card">
-        <div class="tags">
-            {% for rating in product.ratings.all %}
-              {% for tag in rating.taste_tags.all %}
-                  <a href="{% url 'food_hub:product_list_by_tag' slug=tag.slug %}">
-                    <span class="tag" data-type="{{ tag.slug }}">#{{ tag.name }}</span>
-                  </a>
-              {% endfor %}
-            {% endfor %}
-        </div>
-        <div class="card-content">
-          <div class="product-image">
-              {% if product.img_field %}
-                <img src="{{ product.img_field.url }}" alt="Фото продукта">
-              {% else %}
-                <img src="{% static 'images/default.png' %}" alt="Нет фото">
-              {% endif %}
-            {% for rating in product.ratings.all %}
-            <div class="rating">{{ rating.rate }}★</div>
-            {% endfor %}
-          </div>
-          <div class="product-info">
-            <div class="product-name">{{ product.name }}</div>
-            <div class="company-name">{{ product.company.name }}</div>
-          </div>
-        </div>
-      </div>
+      {% include 'food_hub/partials/product_card.html'%}
     {% endfor %}
+  </div>
 {% endblock %}
-</html>
