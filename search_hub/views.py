@@ -11,27 +11,29 @@ from food_hub.models import Product
 
 class ProductSearchView(ListView):
     model = Product
-    template_name = "food_hub/product_list.html"
+    template_name = "search_hub/search_page.html"
     context_object_name = "products"
 
     def get_queryset(self):
-        self.form = SearchForm(self.request.GET) 
+        self.form = SearchForm(self.request.GET)
         if self.form.is_valid(): 
-            query = self.form.cleaned_data["query"] 
+            query = self.form.cleaned_data["query"]
+            if not query.strip(): return Product.objects.none()
             search_vector = (SearchVector("name", weight="A", config="russian") +
                             SearchVector("company__name", weight="B", config="russian") +
                             SearchVector("category__name", weight="C", config="russian")) 
-            search_query = SearchQuery(query, config="russian") 
+            search_query = SearchQuery(query, config="russian", search_type="websearch")
             results = ( Product.objects.annotate( 
                                                 search=search_vector, 
                                                 rank=SearchRank(search_vector, 
                                                                 search_query), )
-                    ).filter(search=search_query).order_by("-rank") 
+                       ).filter(search=search_query).order_by("-rank") 
             if not results.exists():
-                return Product.objects.filter(name__icontains=query) 
+                return Product.objects.filter(name__icontains=query).select_related("company", "category")
             return results 
-        else: 
+        else:                 
             return Product.objects.none()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = self.form
