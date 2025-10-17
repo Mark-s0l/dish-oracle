@@ -65,7 +65,7 @@ class TasteTag(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.name} [{self.get_taste_type_display()}]"
+        return f"{self.name}"
 
     def get_absolute_url(self):
         return reverse("taste_tag_sort", kwargs={"slug": self.slug})
@@ -84,7 +84,10 @@ class Category(models.Model):
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
         indexes = [
-            GinIndex(fields=["name"]),
+            GinIndex(
+                name="category_name_trgm_gin",
+                fields=["name"],
+                opclasses=["gin_trgm_ops"]),
         ]
 
     def __str__(self):
@@ -120,7 +123,10 @@ class Company(models.Model):
         verbose_name = "Компания"
         verbose_name_plural = "Компании"
         indexes = [
-            GinIndex(fields=["name"]),
+            GinIndex(
+                name="company_name_trgm_gin",
+                fields=["name"],
+                opclasses=["gin_trgm_ops"]),
         ]
 
     def __str__(self):
@@ -150,7 +156,10 @@ class Product(models.Model):
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         indexes = [
-            GinIndex(fields=["name"]),
+            GinIndex(
+                name="product_name_trgm_gin",
+                fields=["name"], 
+                opclasses=["gin_trgm_ops"]),
         ]
         constraints = [
             models.UniqueConstraint(
