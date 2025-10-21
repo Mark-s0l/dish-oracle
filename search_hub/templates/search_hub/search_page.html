@@ -3,16 +3,63 @@
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'search_hub/css/search_page.css' %}">
 {% endblock %}
+
 {% block content %}
-<div class="search-bar">
-  <form action="{% url 'search_hub:product_search' %}" method="get">
-    {{ form.query }}
-    <button type="submit">Искать</button>
-  </form>
-  <div class="product-card">
-      {% for product in products %}
-        {% include 'food_hub/partials/product_card.html'%}
-      {% endfor %}
+<form class="search-panel" action="{% url 'search_hub:product_search' %}" method="get" novalidate>
+  <div class="search-bar">
+    <label for="{{ form.query.id_for_label }}" class="visually-hidden"></label>
+    <div class="search-input-wrapper">
+      {{ form.query }}
+      <span class="icon-search" aria-hidden="true"></span>
+      <span class="icon-clear" id="clear-search" aria-hidden="true">&times;</span>
+    </div>
   </div>
+
+  <fieldset class="tag-selector" aria-labelledby="tags-legend">
+    <legend id="tags-legend" class="visually-hidden"></legend>
+    <div class="tag-scroll-wrapper">
+      {{ tag_selector.tags }}
+    </div>
+
+    <div class="action-buttons">
+      <button type="submit" name="action" value="apply" class="btn secondary">Применить</button>
+      <button type="submit" name="action" value="clear" class="btn" action="{% url 'search_hub:product_search' %}"> Сбросить </button>
+    </div>
+  </fieldset>
+</form>
+
+<div class="product-list">
+  {% for product in products %}
+    {% include 'food_hub/partials/product_card.html' %}
+  {% empty %}
+    <p class="empty">Ничего не найдено. Попробуйте изменить запрос или теги.</p>
+  {% endfor %}
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.querySelector('.search-input-wrapper input');
+  const clearBtn = document.getElementById('clear-search');
+
+  if (!input || !clearBtn) return;
+
+  function toggleClear() {
+    clearBtn.style.display = input.value ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', toggleClear);
+
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    input.focus();
+    clearBtn.style.display = 'none';
+    
+    // Если у тебя есть блок с результатами поиска — очистим его
+    const results = document.querySelector('.search-results');
+    if (results) results.innerHTML = '';
+  });
+
+  // при загрузке страницы проверим, если поле уже заполнено
+  toggleClear();
+});
+</script>
 {% endblock %}

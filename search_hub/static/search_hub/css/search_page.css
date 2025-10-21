@@ -1,90 +1,213 @@
-.search-bar-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 101;
-  background: #ffffff;
-  border-bottom: 3px solid #18760d;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  backdrop-filter: blur(8px);
-  padding: 12px;
-}
-
-.search-bar-fixed form {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-}
-
-.input-wrapper {
-  display: flex;
-  align-items: center;
+/* ===== Общие ===== */
+html, body {
+  overflow-x: hidden;
   width: 100%;
-  background: #ffffff;
-  border: 2px solid #287233;
-  border-radius: 14px;
-  padding: 4px 8px;
-  gap: 6px;
 }
 
-.input-wrapper input[type="text"] {
-  flex: 1;
-  font-size: 18px;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #3e3a35;
-  padding: 12px 10px;
+.search-panel {
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
-.input-wrapper input::placeholder {
-  color: #8a8a8a;
-}
-
-.icon-button {
-  background: none;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
+.search-bar {
   display: flex;
   align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.search-input-wrapper input[type="text"] {
+  width: 100%;
+  padding: 10px 14px 10px 42px; /* запас слева под иконку */
+  font-size: 15px;
+  border: 2px solid #000;      /* толще обводка */
+  border-radius: 10px;
+  box-sizing: border-box;
+  background: #fff;
+  line-height: 1.4;
+}
+
+.icon-search {
+  position: absolute;
+  top: 50%;
+  left: 14px;                  /* иконка теперь слева */
+  transform: translateY(-50%);
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: url("/static/search_hub/icons/search_icon.png") no-repeat center;
+  background-size: 22px 22px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ===== Теги ===== */
+.tag-selector,
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tag-scroll-wrapper {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  max-width: 100vw;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 0;
+}
+
+#id_tags {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, auto);
+  gap: 8px 10px;
+  width: max-content;
+  box-sizing: border-box;
+  padding: 0 4px;
+}
+
+/* скрываем чекбоксы */
+#id_tags input[type="checkbox"] {
+  display: none;
+}
+
+/* базовые теги */
+#id_tags label {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.4s ease;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  background-color: #eee;
+  color: #000;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s, color 0.2s, transform 0.1s;
 }
 
-.icon-button:hover {
-  background-color: rgba(40,114,51,0.1);
+/* наведение */
+#id_tags label:hover {
+  background-color: #e2e2e2;
 }
 
-.search-icon {
-  width: 26px;
-  height: 26px;
-  stroke: #287233;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  flex-shrink: 0;
-  transition: transform 0.1s ease;
+/* выбранные (несколько могут быть одновременно) */
+#id_tags label:has(input[type="checkbox"]:checked) {
+  background-color: rgb(0, 0, 0);
+  color: #fff;
+  transform: translateY(-1px);
 }
 
-.icon-button:active .search-icon {
-  transform: scale(1.25);
-  transition: transform 0.1s ease;
+/* ===== Кнопки ===== */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
 }
 
-/* Адаптивность */
-@media (max-width: 600px) {
-  .input-wrapper input[type="text"] {
-    font-size: 16px;
+.btn {
+  border: none;
+  border-radius: 16px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn.secondary {
+  background-color: #000;
+  color: #fff;
+}
+.btn.secondary:hover {
+  background-color: #333;
+}
+
+.btn:not(.secondary) {
+  background-color: #ddd;
+  color: #000;
+}
+.btn:not(.secondary):hover {
+  background-color: #ccc;
+}
+
+/* ===== Скроллбар ===== */
+.tag-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.tag-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+.tag-scroll-wrapper::-webkit-scrollbar-track {
+  background: #e5e5e5;
+}
+.tag-scroll-wrapper {
+  scrollbar-color: #888 #e5e5e5;
+}
+
+/* ===== Адаптив ===== */
+@media (max-width: 768px) {
+  #id_tags {
+    gap: 6px 8px;
   }
 
-  .search-icon {
-    width: 22px;
-    height: 22px;
+  #id_tags label {
+    font-size: 13px;
+    padding: 6px 12px;
   }
+
+  .btn {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar { gap: 8px; }
+  #id_tags label { padding: 5px 10px; }
+}
+
+.search-input-wrapper input[type="text"]:focus {
+  outline: none;
+}
+.search-input-wrapper input[type="text"]:focus::placeholder {
+  color: transparent;
+}
+
+.icon-clear {
+  position: absolute;
+  right: 14px; /* отступ справа, симметрично лупе */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  display: none; /* скрыт, пока поле пустое */
+  user-select: none;
+}
+
+.icon-clear:hover {
+  color: #000;
+}
+
+/* показываем крестик, если поле не пустое */
+.search-input-wrapper input:not(:placeholder-shown) ~ .icon-clear {
+  display: block;
 }
