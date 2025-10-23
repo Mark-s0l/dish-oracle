@@ -37,3 +37,7 @@ launch.json
 
 # Windows
 Thumbs.db
+
+# coverage reports
+.coverage
+htmlcov/
