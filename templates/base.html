@@ -17,29 +17,27 @@
       <div class="fixed-footer">
   <ul>
     <li>
-      <a href="{% url 'food_hub:product_list' %}" title="Главная"
+      <a href="{% url 'food_hub:product_list' %}"
          class="{% if request.path == '/list/' %}active{% endif %}">
-        <svg viewBox="0 0 24 24">
-          <path d="M3 10L12 3L21 10V21H3V10Z"/>
-        </svg>
+        <img src="{% static 'icons/home-page-icon.svg' %}" alt="">
       </a>
     </li>
+
     <li>
-      <a href="{% url 'add_food:add_product' %}" title="Создать"
-      class="{% if request.path == '/#' %}active{% endif %}">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 5V19M5 12H19"/>
-        </svg>
+      <a href="{% url 'search_hub:product_search' %}">
+        <img src="{% static 'icons/search-page-icon.svg' %}" alt="">
       </a>
     </li>
+
     <li>
-      <a href="#" title="Контакты"
-      class="{% if request.path == '/#' %}active{% endif %}">
-        <svg viewBox="0 0 24 24">
-          <path d="M21 10.5V6A2 2 0 0 0 19 4H5A2 2 0 0 0 3 6V18A2 2 0 0 0 5 20H19A2 2 0 0 0 21 18V13.5"/>
-          <path d="M16 3.5V7.5"/>
-          <path d="M8 3.5V7.5"/>
-        </svg>
+      <a href="{% url 'add_food:add_product' %}">
+        <img src="{% static 'icons/add-page-icon.svg' %}" alt="">
+      </a>
+    </li>
+
+    <li>
+      <a href="#">
+        <img src="{% static 'icons/profile-page-icon.svg' %}" alt="">
       </a>
     </li>
   </ul>
