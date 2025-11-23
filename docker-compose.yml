@@ -2,11 +2,11 @@ version: '3.9'
 
 services:
   db:
-    image: postgres-ru # кастомный образ PostgreSQL с локалью ru_RU.UTF-8
+    image: postgres-ru # кастомный образ PostgreSQL с локалью
     environment:
-      POSTGRES_DB: dish_catalog_db
-      POSTGRES_USER: dish_oracle
-      POSTGRES_PASSWORD: MyDrop2605
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -14,4 +14,4 @@ services:
     restart: always
 
 volumes:
-  pgdata:
+  pgdata:x
