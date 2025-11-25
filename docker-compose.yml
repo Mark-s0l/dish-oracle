@@ -14,4 +14,4 @@ services:
     restart: always
 
 volumes:
-  pgdata:x
+  pgdata:
