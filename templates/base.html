@@ -8,35 +8,39 @@
 
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link rel="icon" href="{% static 'icons/favicon.ico' %}" type="image/x-icon">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% block content %}
     {% endblock %}
     {% block footer %}
-      <div class="fixed-footer">
+<div class="fixed-footer">
   <ul>
     <li>
       <a href="{% url 'food_hub:product_list' %}"
-         class="{% if request.path == '/list/' %}active{% endif %}">
+         class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
         <img src="{% static 'icons/home-page-icon.svg' %}" alt="">
       </a>
     </li>
 
     <li>
-      <a href="{% url 'search_hub:product_search' %}">
+      <a href="{% url 'search_hub:product_search' %}"
+         class="{% if request.resolver_match.url_name == 'product_search' %}active{% endif %}">
         <img src="{% static 'icons/search-page-icon.svg' %}" alt="">
       </a>
     </li>
 
     <li>
-      <a href="{% url 'add_food:add_product' %}">
+      <a href="{% url 'add_food:add_product' %}"
+         class="{% if request.resolver_match.url_name == 'add_product' %}active{% endif %}">
         <img src="{% static 'icons/add-page-icon.svg' %}" alt="">
       </a>
     </li>
 
     <li>
-      <a href="#">
+      <a href="#"
+         class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
         <img src="{% static 'icons/profile-page-icon.svg' %}" alt="">
       </a>
     </li>
