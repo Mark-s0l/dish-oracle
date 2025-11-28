@@ -29,8 +29,8 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 
-EAN_DB_API_URL = env('EAN_DB_API_URL')
-EAN_DB_JWT = env('EAN_DB_JWT')
+EAN_DB_API_URL = env("EAN_DB_API_URL")
+EAN_DB_JWT = env("EAN_DB_JWT")
 
 # Application definition
 
@@ -63,7 +63,7 @@ ROOT_URLCONF = "dish_oracle.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -128,7 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [ BASE_DIR / "static" ]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -137,3 +137,52 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+LOG_URL = "/logs/"
+LOG_DIR = BASE_DIR / "logs"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "main_formatters": {
+            "format": "{levelname} {asctime} {module} {pathname} |[{filename}]| [{funcName}]:{lineno} — {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "main_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "main_log.log",
+            "formatter": "main_formatters",
+        },
+        "add_food_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "add_food.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "main_formatters",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["main_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "add_food": {
+            "handlers": ["add_food_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+# ONLY FOR DEV SERVER - REPLACE IN PROD
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok.app",
+    "https://*.ngrok.io",
+]
