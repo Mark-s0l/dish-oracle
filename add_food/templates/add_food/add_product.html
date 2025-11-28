@@ -1,18 +1,47 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Добавление продукта{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'add_food/css/add_product.css' %}">
+{% endblock %}
+
+{% block title %}Добавление товара{% endblock %}
+
+{% block extra_js %}
+<script type="module" src="{% static 'add_food/js/ean-scanner.js' %}"></script>
+{% endblock %}
 
 {% block content %}
-  <h1>Добавить товар по EAN</h1>
-  {% if error_message %}
-    <div class="alert alert-danger">
-      {{ error_message }}
+<h1>Добавление товара</h1>
+
+<div class="scan-wrapper">
+    <div id="scan-trigger" class="scan-trigger visible">
+        <span class="scan-title">Отсканируйте штрих-код</span>
+        <img src="{% static 'add_food/icons/camera-icon.svg' %}" class="camera-icon">
     </div>
-  {% else %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Проверить</button>
-  </form>
-  {% endif %}
+
+    <div id="scanner-box" class="scanner-box hidden">
+        <video id="preview"></video>
+    </div>
+</div>
+
+<div class="divider-or">или</div>
+
+<p id="scan-result" class="scan-result"></p>
+
+<div class="ean_form">
+    <form method="post">
+        {% csrf_token %}
+        <div class="input-wrapper">
+            <img src="{% static 'icons/search-page-icon.svg' %}" class="search-icon" alt="">
+            {{ form.ean_code }}
+        </div>
+
+        <button type="submit" class="ean-submit-btn">Добавить</button>
+
+        {% for error in form.ean_code.errors %}
+            <div class="ean-form-error">{{ error }}</div>
+        {% endfor %}
+    </form>
+</div>
 {% endblock %}
