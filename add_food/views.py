@@ -1,9 +1,10 @@
-from add_food.forms import AddProductForm
-from django.views.generic.edit import FormView
-from food_hub.models import Product, Country, Company, Category
-from add_food.services import fetch_product_data
-from django.shortcuts import redirect, render
 from django.db import transaction
+from django.shortcuts import redirect, render
+from django.views.generic.edit import FormView
+
+from add_food.forms import AddProductForm
+from add_food.services import add_product
+from food_hub.models import Category, Company, Country, Product
 
 
 class AddProductView(FormView):
@@ -15,13 +16,11 @@ class AddProductView(FormView):
         try:
             product = Product.objects.get(ean_code=ean)
         except Product.DoesNotExist:
-            api_data = fetch_product_data(ean)
-            if not api_data:
-                return render(
-                    self.request,
-                    "add_food/add_product.html",
-                    {"error_message": "Сервис недоступен"},
-                )
+            api_data = add_product(ean)
+
+            if api_data is None or api_data.get("successful") is False:
+                form.add_error("ean_code", api_data.get("error", "Неизвестная ошибка"))
+                return render(self.request, self.template_name, {"form": form})
 
             with transaction.atomic():
                 country, _ = Country.objects.get_or_create(name=api_data["country"])
@@ -35,7 +34,7 @@ class AddProductView(FormView):
                     ean_code=ean,
                     category=category,
                     company=company,
-                    img_field=api_data.get("image_path"),
+                    img_field=api_data.get("save_path"),
                 )
 
         return redirect("rate_food:add_rate", product_id=product.pk)
