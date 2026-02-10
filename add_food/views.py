@@ -37,4 +37,5 @@ class AddProductView(FormView):
                     img_field=api_data.get("save_path"),
                 )
 
-        return redirect("rate_food:add_rate", product_id=product.pk)
+        self.request.session["current_product_id"] = product.pk
+        return redirect("rate_food:add_rate")
