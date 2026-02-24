@@ -184,8 +184,10 @@ def get_dict_data(data: dict) -> dict[str, str] | None:
     ean = product.get("barcode", "")
     country = product.get("barcodeDetails", {}).get("country", "")
 
-    def pick_lang(block: dict) -> str:
-        return block.get("ru") or block.get("en") or ""
+    def pick_lang(block: dict) -> str | None:
+        if block is None:
+            return None
+        return block.get("ru") or block.get("en") or next(iter(block.values()), "")
 
     name = pick_lang(product.get("titles", {}))
     company = pick_lang(product.get("manufacturer", {}).get("titles", {}))
@@ -197,7 +199,7 @@ def get_dict_data(data: dict) -> dict[str, str] | None:
     save_path = save_image(data, image_url)
 
     if not name or not company or not category or save_path is None:
-        logger.warning(
+        logger.error(
             f"[DATA] Incomplete product data for ean={ean} | "
             f"name={name} | company={company} | "
             f"category={category} | country={country} | save_path={save_path}"
