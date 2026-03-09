@@ -29,7 +29,6 @@ def test_add_product_api_failure_shows_form_error(client, mocker):
 
 def test_add_product_creates_new_models_and_redirects(client, mocker):
     ean = "4607145590012"
-
     mocker.patch(
         "add_food.views.add_product",
         return_value={
@@ -41,24 +40,22 @@ def test_add_product_creates_new_models_and_redirects(client, mocker):
             "save_path": "products/test.jpg",
         },
     )
-
     url = reverse("add_food:add_product")
     response = client.post(url, {"ean_code": ean})
 
-    # редирект
     assert response.status_code == 302
 
     product = Product.objects.get(ean_code=ean)
     assert product.name == "Шоколадка"
     assert product.img_field == "products/test.jpg"
-
     assert Country.objects.filter(name="Швейцария").count() == 1
     assert Company.objects.filter(name="Nestle").count() == 1
     assert Category.objects.filter(name="Сладости").count() == 1
 
-    expected_url = reverse("rate_food:add_rate", kwargs={"product_id": product.id})
+    expected_url = reverse("rate_food:add_rate")
     assert response.url == expected_url
 
+    assert client.session["current_product_id"] == product.pk
 
 def test_add_product_reuses_existing_related(client, mocker):
     ean = "4607145590012"
