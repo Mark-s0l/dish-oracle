@@ -4,6 +4,6 @@ from django.urls import path
 app_name = 'rate_food'
 
 urlpatterns = [
-    path("<int:product_id>/", views.AddRatingView.as_view(), name="add_rate"),
-    path("add_tags/", views.SaveRatingView.as_view(), name="add_tags"),
+    path("add_rate/", views.RateProductView.as_view(), name="add_rate"),
+    path("save_rate/", views.SaveRatingView.as_view(), name="save_rate"),
 ]
