@@ -14,6 +14,8 @@ from pathlib import Path
 
 import environ
 
+from django.contrib.messages import constants as messages
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     "add_food",
     "rate_food",
     "django.contrib.postgres",
+    "django_htmx",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "dish_oracle.urls"
@@ -165,6 +169,14 @@ LOGGING = {
             "backupCount": 3,
             "formatter": "main_formatters",
         },
+        "rate_food_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "rate_food.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "main_formatters",
+        },
     },
     "loggers": {
         "django": {
@@ -177,6 +189,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "rate_food" : {
+            "handlers" : ["rate_food_file"],
+            "level" : "INFO",
+            "propagate" : False,
+        }
     },
 }
 
@@ -185,4 +202,12 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.ngrok-free.dev",
     "https://*.ngrok.app",
     "https://*.ngrok.io",
-]
+]   
+
+MESSAGE_TAGS = {
+    messages.DEBUG:    'secondary',
+    messages.INFO:     'info',
+    messages.SUCCESS:  'success',
+    messages.WARNING:  'warning',
+    messages.ERROR:    'danger',
+}
