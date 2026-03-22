@@ -1,0 +1,57 @@
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  background: #ffffff;
+  font-family: 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+
+.product-image {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+.product-image img {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  object-fit: contain;
+}
+
+
+.product-info {
+  width: 100%;
+  padding: 4px 0 20px;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.company-name {
+  font-size: 14px;
+  color: #999;
+}
