@@ -1,15 +1,33 @@
-<form method="post" action="{% url 'rate_food:add_tags' %}">
-  {% csrf_token %}
-  <input type="hidden" name="product_id" value="{{ product_id }}">
-  <input type="hidden" name="rate" value="{{ rate }}">
+{% load static %}
+<div class="tag-step">
+  <form
+    method="post"
+    action="{% url 'rate_food:save_rate' %}">
 
-  <p>Выберите теги:</p>
-  {% for tag in tags %}
-    <label>
-      <input type="checkbox" name="tags" value="{{ tag.pk }}">
-      {{ tag.name }}
-    </label><br>
-  {% endfor %}
+    {% csrf_token %}
+
+      {% if tags_form.non_field_errors %}
+      <div class="alert alert-danger">{{ tags_form.non_field_errors }}</div>
+      {% endif %}
+
+      {% for checkbox in tags_form.taste_tags %}
+        <label>
+          {{ checkbox }}
+        </label><br>
+      {% endfor %}
+
+      {{ tags_form.taste_tags.errors }}
 
   <button type="submit">Сохранить</button>
-</form>
+
+  <button
+    type="button"
+    hx-get="{% url 'rate_food:add_rate' %}"
+    hx-target="#tags-container"
+    hx-swap="innerHTML">
+    Назад
+  </button>
+
+  </form>
+  {% include 'partials/message_part.html'%}
+</div>
