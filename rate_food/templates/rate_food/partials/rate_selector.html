@@ -4,7 +4,7 @@
     method="post"
     hx-post="{% url 'rate_food:add_rate' %}"
     hx-target="#tags-container"
-    hx-swap="innerHTML"
+    hx-swap="innerHTML swap:500ms"
     hx-trigger="change">
 
     {% csrf_token %}
