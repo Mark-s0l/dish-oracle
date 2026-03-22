@@ -10,11 +10,11 @@
       <div class="alert alert-danger">{{ tags_form.non_field_errors }}</div>
       {% endif %}
 
-      {% for checkbox in tags_form.taste_tags %}
-        <label>
-          {{ checkbox }}
-        </label><br>
-      {% endfor %}
+      <div class="tags-grid">
+        {% for checkbox in tags_form.taste_tags %}
+          <label>{{ checkbox }}</label>
+        {% endfor %}
+      </div>
 
       {{ tags_form.taste_tags.errors }}
 
