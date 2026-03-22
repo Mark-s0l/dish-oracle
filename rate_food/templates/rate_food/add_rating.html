@@ -1,22 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Добавление продукта{% endblock %}
-
 {% block content %}
-<form id="rating-form">
-  {% csrf_token %}
   <p>Оцените продукт:</p>
 
-  {% for i in "12345" %}
-    <label>
-      <input type="radio" name="rate" value="{{ i }}"
-             hx-post="{% url 'rate_food:add_rate' product.id %}"
-             hx-target="#tags-container"
-             hx-swap="innerHTML"
-             hx-include="#rating-form">
-      {{ i }} звёзд
-    </label><br>
-  {% endfor %}
-  <div id="tags-container"></div>
-</form>
+  {% include 'food_hub/partials/product_card.html' %}
+  {% csrf_token %}
+  <div
+    id="tags-container"
+    hx-get="{% url 'rate_food:add_rate' %}"
+    hx-trigger="load"
+    hx-target="#tags-container"
+    hx-swap="innerHTML">
+  </div>
+
 {% endblock %}
