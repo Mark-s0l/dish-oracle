@@ -1,0 +1,27 @@
+{% load static %}
+<div class="rate-step">
+  <form
+    method="post"
+    hx-post="{% url 'rate_food:add_rate' %}"
+    hx-target="#tags-container"
+    hx-swap="innerHTML"
+    hx-trigger="change">
+
+    {% csrf_token %}
+
+    {% if rate_form.non_field_errors %}
+          <div class="alert alert-danger">{{ rate_form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for radio in rate_form.rate %}
+      <label>
+        {{ radio.tag }}
+        {{ radio.choice_label }}
+      </label>
+    {% endfor %}
+    
+    {{ rate_form.rate.errors }}
+
+  </form>
+  {% include 'partials/message_part.html'%}
+</div>
