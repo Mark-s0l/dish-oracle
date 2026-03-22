@@ -1,9 +1,11 @@
 {% load static %}
       <div class="container">
         <div class="tags">
-          {% for name in product.tag_names %} 
-            #{{ name }}
-          {% endfor %}
+          {% if product.tag_names %}
+            {% for name in product.tag_names %} 
+              #{{ name }}
+            {% endfor %}
+          {% endif %}
         </div>
         <div class="card-content">
           <div class="product-image">
@@ -12,9 +14,10 @@
               {% else %}
                 <img src="{% static 'images/default.png' %}" alt="Нет фото">
               {% endif %}
-            {% for rating in product.ratings.all %}
-            <div class="rating">{{ rating.rate }}★</div>
-            {% endfor %}
+                {% for rating in product.ratings.all %}
+                  <div class="rating">{{ rating.rate }}★</div>
+                {% empty %}
+                {% endfor %}
           </div>
           <div class="product-info">
             <div class="product-name">{{ product.name }}</div>
