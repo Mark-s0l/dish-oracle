@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rate_food/css/product_card.css' %}">
+<link rel="stylesheet" href="{% static 'rate_food/css/rate_selector.css' %}">
+<link rel="stylesheet" href="{% static 'rate_food/css/tag_selector.css' %}">
+{% endblock %}
 {% block title %}Добавление продукта{% endblock %}
 {% block content %}
-  <p>Оцените продукт:</p>
 
   {% include 'food_hub/partials/product_card.html' %}
   {% csrf_token %}
@@ -14,4 +18,7 @@
     hx-swap="innerHTML">
   </div>
 
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'rate_food/js/rate_selector.js' %}"></script>
 {% endblock %}
