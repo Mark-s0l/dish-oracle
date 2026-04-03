@@ -97,11 +97,28 @@ h1 {
   cursor: pointer;
 
   transition: background .15s ease, transform .1s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ean-submit-btn:active {
   transform: scale(0.97);
   background: #9e5ab4;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #ffffff55;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* ==== СКАНЕР ==== */

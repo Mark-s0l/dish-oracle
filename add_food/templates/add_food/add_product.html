@@ -9,6 +9,7 @@
 
 {% block extra_js %}
 <script type="module" src="{% static 'add_food/js/ean-scanner.js' %}"></script>
+<script type="module" src="{% static 'add_food/js/add_product.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -37,7 +38,7 @@
             {{ form.ean_code }}
         </div>
 
-        <button type="submit" class="ean-submit-btn">Добавить</button>
+        <button id="submit_button" type="submit" class="ean-submit-btn">Добавить</button>
 
         {% for error in form.ean_code.errors %}
             <div class="ean-form-error">{{ error }}</div>
