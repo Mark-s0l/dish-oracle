@@ -5,6 +5,9 @@
   <link rel="stylesheet" href="{% static '/css/tags.css' %}">
   <link rel="stylesheet" href="{% static '/css/product_card.css' %}">
 {% endblock %}
+{% block extra_js %}                                                                              
+  <script src="{% static 'js/search_cross.js' %}"></script>                                       
+{% endblock %}  
 
 {% block content %}
 <form class="search-panel" action="{% url 'search_hub:product_search' %}" method="get" novalidate>
@@ -37,31 +40,4 @@
     <p class="empty">Ничего не найдено. Попробуйте изменить запрос или теги.</p>
   {% endfor %}
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const input = document.querySelector('.search-input-wrapper input');
-  const clearBtn = document.getElementById('clear-search');
-
-  if (!input || !clearBtn) return;
-
-  function toggleClear() {
-    clearBtn.style.display = input.value ? 'block' : 'none';
-  }
-
-  input.addEventListener('input', toggleClear);
-
-  clearBtn.addEventListener('click', () => {
-    input.value = '';
-    input.focus();
-    clearBtn.style.display = 'none';
-    
-    // Если у тебя есть блок с результатами поиска — очистим его
-    const results = document.querySelector('.search-results');
-    if (results) results.innerHTML = '';
-  });
-
-  // при загрузке страницы проверим, если поле уже заполнено
-  toggleClear();
-});
-</script>
 {% endblock %}
