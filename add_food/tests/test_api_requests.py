@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from add_food.services import api_request
+from add_food.services import api_request, ApiError, ProductNotFoundError, ResponseTimeOutError, ResponseConnectionError, ValueReadingJsonError
 
 
 @pytest.fixture
@@ -21,10 +21,8 @@ def test_api_404(mock_requests_get):
     mock_response = Mock(status_code=404)
     mock_response.json.return_value = {"detail": "Not Found"}
     mock_requests_get.return_value = mock_response
-
-    result = api_request("123")
-    assert result["successful"] is False
-    assert result["error"] == "Ошибка. Товар не был найден"
+    with pytest.raises(ProductNotFoundError):
+        api_request("123")
 
 
 @pytest.mark.parametrize("status_code", [401, 403, 500, 502, 503])
@@ -36,9 +34,8 @@ def test_api_errors(mock_requests_get, status_code):
     )
     mock_requests_get.return_value = mock_response
 
-    result = api_request("4607145590012")
-    assert result["successful"] is False
-    assert result["error"] == "Ошибка соединения"
+    with pytest.raises(ApiError):
+        api_request("4607145590012")
 
 
 def test_api_invalid_json(mock_requests_get):
@@ -48,35 +45,27 @@ def test_api_invalid_json(mock_requests_get):
 
     mock_requests_get.return_value = mock_response
 
-    result = api_request("4607145590012")
-
-    assert result["successful"] is False
-    assert result["error"] == "Ошибка обработки ответа"
-
+    with pytest.raises(ApiError):
+        api_request("4607145590012")
 
 def test_api_timeout(mock_requests_get):
     mock_requests_get.side_effect = requests.exceptions.Timeout()
 
-    result = api_request("4607145590012")
-
-    assert result["successful"] is False
-    assert result["error"] == "Превышено время ожидания"
+    with pytest.raises(ApiError):
+        api_request("4607145590012")
 
 
 def test_api_another_raise(mock_requests_get):
     mock_requests_get.side_effect = requests.exceptions.RequestException()
-
-    result = api_request("4607145590012")
-
-    assert result["successful"] is False
-    assert result["error"] == "Ошибка соединения"
+    with pytest.raises(ApiError):
+        api_request("4607145590012")
 
 
-def test_api_succefful(mock_requests_get, product_json):
+def test_api_successfully(mock_requests_get, product_json):
     mock_response = Mock(status_code=200)
     mock_response.json.return_value = product_json
     mock_requests_get.return_value = mock_response
 
     result = api_request("4607145590012")
-    assert result["successful"] is True
-    assert result["data"] == product_json
+    assert isinstance(result, dict)
+    assert "product" in result

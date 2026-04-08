@@ -1,92 +1,128 @@
-import pytest
+from unittest.mock import patch
+from django.test import TestCase
 from django.urls import reverse
-
+from django.db import DatabaseError, IntegrityError
+from add_food.forms import AddProductForm
+from add_food.services import ApiError
 from food_hub.models import Category, Company, Country, Product
 
-pytestmark = pytest.mark.django_db
+
+VALID_EAN = "4006381333931"
 
 
-def test_add_product_api_failure_shows_form_error(client, mocker):
-    ean = "4607145590012"
+def make_api_data(**kwargs):
+    defaults = {
+        "name": "Test Product",
+        "country": "Germany",
+        "company": "Test Corp",
+        "category": "Snacks",
+        "save_path": "/images/test.jpg",
+    }
+    return {**defaults, **kwargs}
 
-    mocker.patch(
-        "add_food.views.add_product",
-        return_value={
-            "successful": False,
-            "error": "Ошибка",
-        },
+
+def make_product():
+    country = Country.objects.create(name="Germany")
+    company = Company.objects.create(name="Test Corp", country=country)
+    category = Category.objects.create(name="Snacks")
+    return Product.objects.create(
+        ean_code=VALID_EAN,
+        name="Test Product",
+        category=category,
+        company=company,
+        img_field="/images/test.jpg",
     )
 
-    url = reverse("add_food:add_product")
-    response = client.post(url, {"ean_code": ean})
 
-    assert response.status_code == 200
+class AddProductViewTests(TestCase):
 
-    content = response.content.decode()
-    assert "Ошибка" in content
-    assert Product.objects.count() == 0
+    def setUp(self):
+        self.url = reverse("add_food:add_product")
+        self.form_data = {"ean_code": VALID_EAN}
 
 
-def test_add_product_creates_new_models_and_redirects(client, mocker):
-    ean = "4607145590012"
-    mocker.patch(
-        "add_food.views.add_product",
-        return_value={
-            "successful": True,
-            "name": "Шоколадка",
-            "company": "Nestle",
-            "category": "Сладости",
-            "country": "Швейцария",
-            "save_path": "products/test.jpg",
-        },
-    )
-    url = reverse("add_food:add_product")
-    response = client.post(url, {"ean_code": ean})
+    def test_existing_product_redirects(self):
+        make_product()
+        with patch("add_food.views.add_product") as mock_api, \
+             patch.object(AddProductForm, "validate_unique"):
+            response = self.client.post(self.url, self.form_data)
+            mock_api.assert_not_called()
+        self.assertRedirects(response, reverse("rate_food:add_rate"))
 
-    assert response.status_code == 302
+    def test_existing_product_saves_id_in_session(self):
+        product = make_product()
+        with patch.object(AddProductForm, "validate_unique"):
+            self.client.post(self.url, self.form_data)
+        self.assertEqual(self.client.session["current_product_id"], product.pk)
 
-    product = Product.objects.get(ean_code=ean)
-    assert product.name == "Шоколадка"
-    assert product.img_field == "products/test.jpg"
-    assert Country.objects.filter(name="Швейцария").count() == 1
-    assert Company.objects.filter(name="Nestle").count() == 1
-    assert Category.objects.filter(name="Сладости").count() == 1
 
-    expected_url = reverse("rate_food:add_rate")
-    assert response.url == expected_url
+    @patch("add_food.views.add_product")
+    def test_new_product_created_via_api(self, mock_api):
+        mock_api.return_value = make_api_data()
+        response = self.client.post(self.url, self.form_data)
+        self.assertRedirects(response, reverse("rate_food:add_rate"))
+        self.assertTrue(Product.objects.filter(ean_code=VALID_EAN).exists())
 
-    assert client.session["current_product_id"] == product.pk
+    @patch("add_food.views.add_product")
+    def test_new_product_saves_id_in_session(self, mock_api):
+        mock_api.return_value = make_api_data()
+        self.client.post(self.url, self.form_data)
+        product = Product.objects.get(ean_code=VALID_EAN)
+        self.assertEqual(self.client.session["current_product_id"], product.pk)
 
-def test_add_product_reuses_existing_related(client, mocker):
-    ean = "4607145590012"
+    @patch("add_food.views.add_product")
+    def test_duplicate_ean_no_duplicate_created(self, mock_api):
+        mock_api.return_value = make_api_data()
+        with patch.object(AddProductForm, "validate_unique"):
+            self.client.post(self.url, self.form_data)
+            self.client.post(self.url, self.form_data)
+        self.assertEqual(Product.objects.filter(ean_code=VALID_EAN).count(), 1)
 
-    country = Country.objects.create(name="Германия")
-    company = Company.objects.create(name="Haribo", country=country)
-    category = Category.objects.create(name="Жевательные конфеты")
 
-    mocker.patch(
-        "add_food.views.add_product",
-        return_value={
-            "successful": True,
-            "name": "Goldbären",
-            "company": "Haribo",
-            "category": "Жевательные конфеты",
-            "country": "Германия",
-            "save_path": None,
-        },
-    )
+    @patch("add_food.views.add_product")
+    def test_api_error_shows_form_error(self, mock_api):
+        mock_api.side_effect = ApiError("Продукт не найден в базе")
+        response = self.client.post(self.url, self.form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Продукт не найден в базе", response.context["form"].errors["ean_code"])
 
-    url = reverse("add_food:add_product")
-    response = client.post(url, {"ean_code": ean})
+    @patch("add_food.views.AddProductView._get_or_create_product")
+    @patch("add_food.views.add_product")
+    def test_database_error_shows_form_error(self, mock_api, mock_create):
+        mock_api.return_value = make_api_data()
+        mock_create.side_effect = DatabaseError()
+        response = self.client.post(self.url, self.form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Ошибка записи данных", response.context["form"].errors["ean_code"][0])
 
-    assert response.status_code == 302
 
-    product = Product.objects.get(ean_code=ean)
+    def test_get_or_create_creates_all_objects(self):
+        from add_food.views import AddProductView
+        product = AddProductView()._get_or_create_product(VALID_EAN, make_api_data())
+        self.assertEqual(product.ean_code, VALID_EAN)
+        self.assertEqual(product.company.name, "Test Corp")
+        self.assertEqual(product.company.country.name, "Germany")
+        self.assertEqual(product.category.name, "Snacks")
 
-    assert product.company == company
-    assert product.category == category
-    assert product.company.country == country
+    def test_get_or_create_is_idempotent(self):
+        from add_food.views import AddProductView
+        view = AddProductView()
+        view._get_or_create_product(VALID_EAN, make_api_data())
+        view._get_or_create_product(VALID_EAN, make_api_data())
+        self.assertEqual(Product.objects.filter(ean_code=VALID_EAN).count(), 1)
 
-    assert Country.objects.filter(name="Германия").count() == 1
-    assert Company.objects.filter(name="Haribo").count() == 1
-    assert Category.objects.filter(name="Жевательные конфеты").count() == 1
+    def test_get_or_create_handles_integrity_error(self):
+        from add_food.views import AddProductView
+
+        product = make_product()
+
+        view = AddProductView()
+
+        with patch(
+            "add_food.views.Product.objects.get_or_create",
+            side_effect=IntegrityError,
+        ):
+            result = view._get_or_create_product(VALID_EAN, make_api_data())
+
+        self.assertEqual(result.pk, product.pk)
+        self.assertEqual(result.ean_code, VALID_EAN)

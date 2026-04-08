@@ -1,7 +1,7 @@
-from add_food.services import get_quad_image
+from add_food.services import get_square_image
 
 
-def test_get_quad_image_returns_square_image_url():
+def test_get_square_image_returns_square_image_url():
     data = {
         "product": {
             "barcode": "1234567890123",
@@ -13,10 +13,10 @@ def test_get_quad_image_returns_square_image_url():
         }
     }
 
-    assert get_quad_image(data) == "http://example.com/square.jpg"
+    assert get_square_image(data) == "http://example.com/square.jpg"
 
 
-def test_get_quad_image_returns_first_when_no_square():
+def test_get_square_image_returns_first_when_no_square():
     data = {
         "product": {
             "barcode": "9876543210987",
@@ -27,19 +27,19 @@ def test_get_quad_image_returns_first_when_no_square():
         }
     }
 
-    assert get_quad_image(data) == "http://example.com/first.jpg"
+    assert get_square_image(data) == "http://example.com/first.jpg"
 
 
-def test_get_quad_image_returns_none_when_no_images():
+def test_get_square_image_returns_none_when_no_images():
 
     data_no_images = {"product": {"barcode": "0000000000000", "images": []}}
-    assert get_quad_image(data_no_images) is None
+    assert get_square_image(data_no_images) is None
 
     data_missing_product = {}
-    assert get_quad_image(data_missing_product) is None
+    assert get_square_image(data_missing_product) is None
 
 
-def test_get_quad_image_considers_missing_dimensions_as_equal():
+def test_get_square_image_considers_missing_dimensions_as_equal():
     data = {
         "product": {
             "barcode": "1111111111111",
@@ -50,4 +50,16 @@ def test_get_quad_image_considers_missing_dimensions_as_equal():
         }
     }
 
-    assert get_quad_image(data) == "http://example.com/no_dims.jpg"
+    assert get_square_image(data) == "http://example.com/no_dims.jpg"
+
+def test_get_square_image_skips_image_without_url():
+    data = {
+        "product": {
+            "barcode": "1234567890123",
+            "images": [
+                {"width": 150, "height": 150, "url": None},        # ← пропускается
+                {"width": 200, "height": 200, "url": "http://example.com/square.jpg"},
+            ],
+        }
+    }
+    assert get_square_image(data) == "http://example.com/square.jpg"
