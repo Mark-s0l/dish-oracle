@@ -1,4 +1,5 @@
-/* Устанавливаем высоту для html и body */
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap');
+
 html, body {
   min-height: 100vh;
   height: 100%;

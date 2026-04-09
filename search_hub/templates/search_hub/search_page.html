@@ -2,7 +2,6 @@
 {% load static %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'search_hub/css/search_page.css' %}">
-  <link rel="stylesheet" href="{% static '/css/tags.css' %}">
   <link rel="stylesheet" href="{% static '/css/product_card.css' %}">
 {% endblock %}
 {% block extra_js %}                                                                              
@@ -33,7 +32,7 @@
   </fieldset>
 </form>
 
-<div class="product-list">
+<div class="product-grid">
   {% for product in products %}
     {% include 'food_hub/partials/product_card.html' %}
   {% empty %}

@@ -1,27 +1,33 @@
 {% load static %}
-      <div class="container">
-        <div class="tags">
-          {% if product.tag_names %}
-            {% for name in product.tag_names %} 
-              #{{ name }}
+<div class="pcard">
+    <div class="pcard__image">
+        {% if product.img_field %}
+            <img src="{{ product.img_field.url }}" alt="Фото продукта">
+        {% else %}
+            <img src="{% static 'images/default.png' %}" alt="Нет фото">
+        {% endif %}
+    </div>
+    <div class="pcard__body">
+        <div class="pcard__name">{{ product.name }}</div>
+        <div class="pcard__tags">
+            {% for name in product.tag_names %}
+                <span class="pcard__tag">{{ name }}</span>
             {% endfor %}
-          {% endif %}
         </div>
-        <div class="card-content">
-          <div class="product-image">
-              {% if product.img_field %}
-                <img src="{{ product.img_field.url }}" alt="Фото продукта">
-              {% else %}
-                <img src="{% static 'images/default.png' %}" alt="Нет фото">
-              {% endif %}
-                {% for rating in product.ratings.all %}
-                  <div class="rating">{{ rating.rate }}★</div>
-                {% empty %}
-                {% endfor %}
-          </div>
-          <div class="product-info">
-            <div class="product-name">{{ product.name }}</div>
-            <div class="company-name">{{ product.company.name }}</div>
-          </div>
+        <div class="pcard__bottom">
+            <div class="pcard__stars">
+                {% with rating=product.ratings.first %}
+                {% if rating %}
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= rating.rate %}
+                            <img src="{% static 'rate_food/icons/star-icon-active.svg' %}" class="pcard__star" alt="">
+                        {% else %}
+                            <img src="{% static 'rate_food/icons/star-icon.svg' %}" class="pcard__star" alt="">
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
         </div>
-      </div>
+    </div>
+</div>

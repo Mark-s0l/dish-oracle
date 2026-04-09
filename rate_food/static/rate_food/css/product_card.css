@@ -1,57 +1,67 @@
-.container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 24px 20px;
-  background: #ffffff;
-  font-family: 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif;
+.pcard {
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 480px;
+    margin: 0 auto;
+    font-family: "Comfortaa", cursive;
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: #aaa;
+.pcard__image {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    background: #ffffff;
 }
 
-.card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.pcard__image img {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    object-fit: contain;
 }
 
-
-.product-image {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
+.pcard__body {
+    padding: 16px 20px 24px;
 }
 
-.product-image img {
-  width: 100%;
-  max-width: 280px;
-  height: auto;
-  object-fit: contain;
+.pcard__name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #4a5a2a;
+    line-height: 1.35;
+    margin-bottom: 10px;
 }
 
-
-.product-info {
-  width: 100%;
-  padding: 4px 0 20px;
+.pcard__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
 }
 
-.product-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-  line-height: 1.35;
-  margin-bottom: 6px;
+.pcard__tag {
+    background: #ffffff;
+    color: #5c6b35;
+    font-size: 0.75rem;
+    font-family: "Comfortaa", cursive;
+    padding: 4px 10px;
+    border-radius: 999px;
 }
 
-.company-name {
-  font-size: 14px;
-  color: #999;
+.pcard__bottom {
+    display: flex;
+    align-items: center;
+}
+
+.pcard__stars {
+    display: flex;
+    gap: 4px;
+}
+
+.pcard__star {
+    width: 20px;
+    height: 20px;
 }

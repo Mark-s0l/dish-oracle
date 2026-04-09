@@ -13,7 +13,7 @@
   display: block;
   font-size: 22px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #5c6b35;
   margin-bottom: 24px;
   text-align: center;
 }
@@ -50,7 +50,7 @@
   padding: 10px 18px;
   border-radius: 50px;
   background-color: #efefef;
-  color: #1a1a1a;
+  color: #5c6b35;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -65,7 +65,7 @@
 }
 
 .tag-step form label:has(input[type="checkbox"]:checked) {
-  background-color: #1a1a1a;
+  background-color: #7ea84a;
   color: #ffffff;
 }
 

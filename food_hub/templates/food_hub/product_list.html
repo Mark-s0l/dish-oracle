@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static '/css/tags.css' %}">
-  <link rel="stylesheet" href="{% static '/css/product_card.css' %}">
+<link rel="stylesheet" href="{% static '/css/product_card.css' %}">
 {% endblock %}
 {% block title %}Список продуктов{% endblock %}
 {% block content %}
-  <div class="product-card">
-    {% for product in products %}
-      {% include 'food_hub/partials/product_card.html'%}
-    {% endfor %}
-  </div>
+<div class="product-grid">
+  {% for product in products %}
+    {% include 'food_hub/partials/product_card.html' %}
+  {% endfor %}
+</div>
 {% endblock %}
