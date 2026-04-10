@@ -46,7 +46,7 @@ pip install -r requirements.txt
 
 ### 4. Create your environment file
 ```bash
-cp env.example .env
+cp .env.example .env
 ```
 Then open `.env` and set your own `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, etc.
 
@@ -75,6 +75,21 @@ You can now:
 - Rate it with **custom tags** (e.g. *Sweet, Spicy, Plastic, Would eat again*)
 - Re-rate existing products
 - Filter products by **tags** or search by **name**, **company**, **category**
+
+---
+
+## 🔌 External API
+
+This project uses the [EAN-DB API](https://ean-db.com) to fetch product data by barcode.
+
+You can use the same public API for your own instance — the settings format matches `.env.example` exactly:
+
+```env
+EAN_DB_API_URL=https://ean-db.com/api/v2/product/
+EAN_DB_JWT=YOUR_JWT_TOKEN
+```
+
+Get your JWT token by registering at [ean-db.com](https://ean-db.com).
 
 ---
 
