@@ -1,6 +1,6 @@
 # Dish Oracle 🍽️
 
-A Django-based web app to organize and rate grocery products by personal taste tags, offering personalized recommendations based on your flavor profile.
+A Django-based web app to organize and rate grocery products by personal taste tags, with personalized recommendations coming in future updates.
 
 ---
 
@@ -28,7 +28,7 @@ You’ll need:
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/dish-oracle.git
+git clone https://github.com/Mark-s0l/dish-oracle.git
 cd dish-oracle
 ```
 
@@ -111,13 +111,10 @@ pytest [app_name]
 
 To run this on a live server:
 
-- Use **PostgreSQL** instead of SQLite  
 - Set `DEBUG=False` in `.env`  
 - Set valid `ALLOWED_HOSTS`  
 - Run Django with **Gunicorn** or **uWSGI** behind **Nginx**  
 - Configure static files with `collectstatic`
-
-*(More deployment notes coming soon.)*
 
 ---
 
@@ -125,8 +122,11 @@ To run this on a live server:
 
 - [Django](https://www.djangoproject.com/)
 - [django-environ](https://github.com/joke2k/django-environ)
+- [django-htmx](https://github.com/adamchainz/django-htmx)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Docker](https://www.docker.com/)
+- [Requests](https://requests.readthedocs.io/)
+- [Pillow](https://pillow.readthedocs.io/)
 
 ---
 
@@ -140,7 +140,7 @@ For major changes, open an issue first to discuss what you’d like to modify.
 ## 🔖 Versioning
 
 This project follows [SemVer](https://semver.org/).  
-Current release: `v0.1.0`
+Current release: `v1.0.0`
 
 ---
 
