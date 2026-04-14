@@ -34,6 +34,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 EAN_DB_API_URL = env("EAN_DB_API_URL")
 EAN_DB_JWT = env("EAN_DB_JWT")
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     "rate_food",
     "django.contrib.postgres",
     "django_htmx",
+    "accounts",
 ]
 
 MIDDLEWARE = [
