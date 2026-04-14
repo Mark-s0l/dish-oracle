@@ -170,7 +170,6 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.company.name})"
 
-
 class ProductRating(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="ratings"
@@ -185,7 +184,7 @@ class ProductRating(models.Model):
         verbose_name="Комментарий",
         help_text="Комментарий к рейтингу продукта",
     )
-
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # NOTE: This model is designed to link to a user model in future via FK.
     # The field will be added once `user_data` app is implemented.
     taste_tags = models.ManyToManyField(TasteTag, related_name="ratings")
