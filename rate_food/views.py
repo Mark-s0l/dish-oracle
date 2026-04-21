@@ -127,7 +127,7 @@ class SaveRatingView(View):
         tags = tags_form.cleaned_data["taste_tags"]
 
         with transaction.atomic():
-            rating_obj = ProductRating.objects.create(product=product, rate=rate)
+            rating_obj = ProductRating.objects.create(product=product, rate=rate, user=self.request.user)
             rating_obj.taste_tags.set(tags)
         logger.info("[DB] Add new rate for product")
 
