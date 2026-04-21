@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -185,8 +186,6 @@ class ProductRating(models.Model):
         help_text="Комментарий к рейтингу продукта",
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    # NOTE: This model is designed to link to a user model in future via FK.
-    # The field will be added once `user_data` app is implemented.
     taste_tags = models.ManyToManyField(TasteTag, related_name="ratings")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -197,6 +196,12 @@ class ProductRating(models.Model):
         verbose_name_plural = "Рейтинги продуктов"
         indexes = [
             models.Index(fields=["rate", "updated_at", "created_at"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "product"],
+                name="unique_user_product_rating"
+            )
         ]
 
     def __str__(self):
