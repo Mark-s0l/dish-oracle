@@ -3,7 +3,7 @@ from django import forms
 from food_hub.models import Product
 
 
-class AddProductForm(forms.ModelForm):
+class AddProductForm(forms.Form):
     ean_code = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -13,7 +13,3 @@ class AddProductForm(forms.ModelForm):
             }
         )
     )
-
-    class Meta:
-        model = Product
-        fields = ["ean_code"]
