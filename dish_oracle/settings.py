@@ -36,6 +36,13 @@ EAN_DB_JWT = env("EAN_DB_JWT")
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailBackend',              
+]
+
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
 # Application definition
 
 INSTALLED_APPS = [
