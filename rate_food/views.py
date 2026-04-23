@@ -11,6 +11,8 @@ from food_hub.models import Product, ProductRating, TasteTag
 from rate_food.forms import RatingForm, TasteTagForm
 from rate_food.tags_choose import choose_taste_tags
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 logger = logging.getLogger("rate_food")
 
 
@@ -38,7 +40,7 @@ def is_htmx(request) -> bool:
     return request.headers.get("HX-Request") == "true"
 
 
-class RateProductView(View):
+class RateProductView(LoginRequiredMixin, View):
     template_name = "rate_food/add_rating.html"
 
     def get(self, request):
@@ -103,7 +105,7 @@ class RateProductView(View):
         )
 
 
-class SaveRatingView(View):
+class SaveRatingView(LoginRequiredMixin, View):
     def post(self, request):
         logger.info("[S3] User on Stage 3")
         rate = request.session.get("rate")

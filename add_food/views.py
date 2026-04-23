@@ -6,8 +6,10 @@ from add_food.forms import AddProductForm
 from add_food.services import ApiError, add_product
 from food_hub.models import Category, Company, Country, Product
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class AddProductView(FormView):
+
+class AddProductView(LoginRequiredMixin, FormView):
     template_name = "add_food/add_product.html"
     form_class = AddProductForm
 

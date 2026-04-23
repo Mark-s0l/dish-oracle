@@ -7,8 +7,10 @@ from django.views.generic import ListView
 from food_hub.models import Product
 from search_hub.forms import SearchForm, TagSelectorForm
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class ProductSearchView(ListView):
+
+class ProductSearchView(LoginRequiredMixin, ListView):
     model = Product
     template_name = "search_hub/search_page.html"
     context_object_name = "products"
