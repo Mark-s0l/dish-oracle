@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Профиль {% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/user_profile.css' %}">
+{% endblock %}
+{% block content %}
+<div style="position: relative;">
+    <form action="{% url 'accounts:logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Выйти</button>
+    </form>
+    <div class="user-info">
+        {% if user_info.avatar %}
+            <img class="avatar" src="{{ user_info.avatar.url }}" alt="Фото профиля">
+        {% else %}
+            <div class="avatar avatar--placeholder"></div>
+        {% endif %}
+        <span class="username">{{ user_info.username }}</span>
+        <p class="email-label">e-mail:</p>
+        <span class="email-value">{{ user_info.email }}</span>
+    </div>
+</div>
+{% endblock %}
