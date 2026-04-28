@@ -44,7 +44,7 @@
     </li>
 
     <li>
-      <a href="#"
+      <a href="{% url 'accounts:profile' %}"
          class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
         <img src="{% static 'icons/profile-page-icon.svg' %}" alt="">
       </a>
