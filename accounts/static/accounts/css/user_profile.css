@@ -1,0 +1,153 @@
+:root {
+  --green-dark:   #5a7a3a;
+  --green-mid:    #7a9c52;
+  --green-light:  #c8dba8;
+  --green-input:  #ddebc8;
+  --avatar-bg:    #f5edd8;
+  --text-primary: #4a6a2a;
+  --text-muted:   #8aaa6a;
+  --white:        #ffffff;
+  --radius-input: 20px;
+  --font-main: 'Comfortaa', sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-main);
+  background: var(--white);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.profile-wrapper {
+  position: relative;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+  min-height: 100vh;
+}
+
+.logout-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+  transition: opacity 0.2s;
+}
+.logout-btn:hover { opacity: 0.7; }
+.logout-btn svg, .logout-btn img { width: 36px; height: 36px; }
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 24px;
+}
+.avatar--placeholder {
+  background-color: var(--avatar-bg);
+  display: block;
+}
+
+.username {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--green-dark);
+  letter-spacing: 0.02em;
+  margin-bottom: 28px;
+}
+
+.email-section {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.email-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.email-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.email-input {
+  flex: 1;
+  background: var(--green-input);
+  border: none;
+  border-radius: var(--radius-input);
+  padding: 12px 18px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  color: var(--text-muted);
+  outline: none;
+  transition: box-shadow 0.2s, color 0.2s;
+  pointer-events: none;
+  user-select: none;
+}
+.email-input::placeholder { color: var(--text-muted); }
+
+.email-input.is-editing {
+  pointer-events: auto;
+  user-select: text;
+  color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--green-mid);
+}
+
+.edit-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.edit-btn:hover { opacity: 0.7; transform: scale(1.1); }
+.edit-btn svg, .edit-btn img { width: 32px; height: 32px; }
+
+.submit-btn {
+  display: none;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  background: var(--green-mid);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-input);
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.submit-btn:hover { background: var(--green-dark); }
+.submit-btn.is-visible { display: block; }
+
+.email-form-error {
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: #fde8e8;
+  border-radius: 10px;
+  color: #c0392b;
+  font-size: 13px;
+}
