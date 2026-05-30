@@ -18,3 +18,15 @@ class ChangeEmailUser(forms.ModelForm):
                 "placeholder": "example_mail@example.com",
             })
         }
+
+class EmailVerificationCode(forms.Form):
+    code = forms.CharField(
+        min_length=6,
+        max_length=6,
+        widget=forms.TextInput(
+            attrs={
+                "inputmode": "numeric",
+                "autocomplete": "one-time-code",
+            }
+        ),
+    )
