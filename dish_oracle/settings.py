@@ -120,6 +120,16 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
+# E-Mail
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env.int('EMAIL_PORT')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -200,6 +210,14 @@ LOGGING = {
             "backupCount": 3,
             "formatter": "main_formatters",
         },
+        "accounts_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "accounts.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "main_formatters",
+        },
     },
     "loggers": {
         "django": {
@@ -216,7 +234,12 @@ LOGGING = {
             "handlers" : ["rate_food_file"],
             "level" : "INFO",
             "propagate" : False,
-        }
+        },
+        "accounts" : {
+            "handlers" : ["accounts_file"],
+            "level" : "INFO",
+            "propagate" : False,
+        },
     },
 }
 
