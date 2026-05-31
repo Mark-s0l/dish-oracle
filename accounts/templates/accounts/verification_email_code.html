@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="verification-wrapper">
+  <h2>Введите код из почты</h2>
+  <form method="post" class="verification-form">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.code }}
+    </div>
+    {% if form.errors %}
+    <div class="form-errors">
+      {% for error in form.code.errors %}
+      <div class="form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="form-actions">
+      <button type="submit">Подтвердить</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
