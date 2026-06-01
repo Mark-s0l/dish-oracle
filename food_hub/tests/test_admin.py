@@ -13,16 +13,17 @@ from food_hub.models import (
 )
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
-
-@pytest.fixture
-def superuser(db):
+@pytest.fixture(scope="module")
+def superuser(django_db_blocker):
     User = get_user_model()
-    user = User.objects.create_superuser(
-        username="admin", email="admin@example.com", password="adminpass"
-    )
-    return user
+    with django_db_blocker.unblock():
+        user = User.objects.create_superuser(
+            username="admin", email="admin@example.com", password="adminpass"
+        )
+    yield user
+    with django_db_blocker.unblock():
+        user.delete()
 
 
 @pytest.fixture
@@ -156,8 +157,7 @@ def test_admin_tastetag_search_and_filter(admin_client):
 
 
 @pytest.mark.django_db
-def test_admin_productrating_search_and_filter(admin_client):
-    user = User.objects.create_user(username="testuser", password="testpass")
+def test_admin_productrating_search_and_filter(admin_client, user):
     country = Country.objects.create(name="Россия")
     company = Company.objects.create(name="Компания", country=country)
     category = Category.objects.create(name="Десерты")
