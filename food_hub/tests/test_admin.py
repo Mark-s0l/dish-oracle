@@ -11,6 +11,9 @@ from food_hub.models import (
     ProductRating,
     TasteTag,
 )
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 @pytest.fixture
@@ -154,6 +157,7 @@ def test_admin_tastetag_search_and_filter(admin_client):
 
 @pytest.mark.django_db
 def test_admin_productrating_search_and_filter(admin_client):
+    user = User.objects.create_user(username="testuser", password="testpass")
     country = Country.objects.create(name="Россия")
     company = Company.objects.create(name="Компания", country=country)
     category = Category.objects.create(name="Десерты")
@@ -165,7 +169,7 @@ def test_admin_productrating_search_and_filter(admin_client):
         img_field="test2.jpg",
     )
     rating = ProductRating.objects.create(
-        product=product, rate=5, comment="Очень вкусно!"
+        product=product, rate=5, comment="Очень вкусно!", user=user
     )
     url = reverse("admin:food_hub_productrating_changelist")
     # Поиск по имени продукта
@@ -180,6 +184,7 @@ def test_admin_productrating_search_and_filter(admin_client):
     response = admin_client.get(url, {"rate": 5})
     assert response.status_code == 200
     assert "Очень вкусно!" in response.content.decode()
+    assert ProductRating.objects.filter(user=user, product=product).exists()
 
 
 @pytest.mark.django_db
