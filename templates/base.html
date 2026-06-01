@@ -23,8 +23,8 @@
 <div class="fixed-footer">
   <ul>
     <li>
-      <a href="{% url 'food_hub:product_list' %}"
-         class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
+      <a href="{% url 'food_hub:home' %}"
+         class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
         <img src="{% static 'icons/home-page-icon.svg' %}" alt="">
       </a>
     </li>
