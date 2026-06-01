@@ -93,4 +93,3 @@ class TestTasteTagM2MCategory:
         save_and_clean(category)
         with pytest.raises(ValidationError):
             save_and_clean(tag)
-            category.taste_tags.add(tag)

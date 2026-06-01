@@ -21,14 +21,6 @@ def company(db, country):
 def category(db):
     return Category.objects.create(name="Десерты")
 
-
-@pytest.fixture
-def taste_tag(db):
-    return TasteTag.objects.create(
-        name="Сладкий", taste_type=TasteTag.TypeTag.POSITIVE, slug="sladkiy"
-    )
-
-
 @pytest.fixture
 def product(db, company, category):
     return Product.objects.create(
@@ -55,10 +47,11 @@ class TestProductRating:
             (None, pytest.raises(ValidationError)),
         ],
     )
-    def test_rate_validation(self, product, rate, expectation, save_and_clean):
+    def test_rate_validation(self, product, rate, user, expectation, save_and_clean):
         rating = ProductRating(
             product=product,
             rate=rate,
+            user=user
         )
         with expectation:
             save_and_clean(rating)
@@ -74,20 +67,20 @@ class TestProductRating:
             ("a" * 101, pytest.raises(ValidationError)),
         ],
     )
-    def test_comment_length(self, product, comment, expectation, save_and_clean):
-        rating = ProductRating(product=product, rate=5, comment=comment)
+    def test_comment_length(self, product, comment, user, expectation, save_and_clean):
+        rating = ProductRating(product=product, rate=5, comment=comment, user=user)
         with expectation:
             save_and_clean(rating)
 
     @pytest.mark.django_db
-    def test_str_method(self, product):
+    def test_str_method(self, product, user):
         rating = ProductRating.objects.create(
-            product=product, rate=4, comment="Неплохо"
+            product=product, rate=4, comment="Неплохо", user=user
         )
         assert str(rating) == f"Rating 4 for {product.name}"
 
     @pytest.mark.django_db
-    def test_created_and_updated_auto_fields(self, product):
-        rating = ProductRating.objects.create(product=product, rate=3)
+    def test_created_and_updated_auto_fields(self, product, user):
+        rating = ProductRating.objects.create(product=product, rate=3, user=user)
         assert rating.created_at is not None
         assert rating.updated_at is not None

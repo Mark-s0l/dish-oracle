@@ -8,7 +8,7 @@ from food_hub.models import (Category, Company, Country, Product,
 
 class TestTasteTagM2MProductRating:
     @pytest.mark.django_db
-    def test_created(self, save_and_clean):
+    def test_created(self, user, save_and_clean):
         tag_salty = TasteTag(name="солёный", taste_type="P", slug="soleniy")
         tag_sour = TasteTag(name="кислый", taste_type="N", slug="kisliy")
         save_and_clean(tag_salty)
@@ -29,14 +29,14 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=5)
+        rating = ProductRating(product=product, rate=5, user=user)
         save_and_clean(rating)
         rating.taste_tags.add(tag_salty, tag_sour)
         assert tag_salty in rating.taste_tags.all()
         assert tag_sour in rating.taste_tags.all()
 
     @pytest.mark.django_db
-    def test_taste_tags_deleted_unlinks_from_rating(self, save_and_clean):
+    def test_taste_tags_deleted_unlinks_from_rating(self, user, save_and_clean):
         tag_bitter = TasteTag(name="bitter", taste_type="N", slug="bitter")
         tag_sweet = TasteTag(name="сладкий", taste_type="P", slug="sweet")
         save_and_clean(tag_bitter)
@@ -57,7 +57,7 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=4)
+        rating = ProductRating(product=product, rate=4, user=user)
         save_and_clean(rating)
         rating.taste_tags.add(tag_bitter, tag_sweet)
         tag_bitter.delete()
@@ -67,7 +67,7 @@ class TestTasteTagM2MProductRating:
         assert tag_sweet not in updated_tags
 
     @pytest.mark.django_db
-    def test_remove_taste_tag_from_rating(self, save_and_clean):
+    def test_remove_taste_tag_from_rating(self, user, save_and_clean):
         tag_sweet = TasteTag(name="сладкий", taste_type="P", slug="sweet")
         save_and_clean(tag_sweet)
         country = Country(name="Россия")
@@ -86,7 +86,7 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=3)
+        rating = ProductRating(product=product, rate=3, user=user)
         save_and_clean(rating)
         rating.taste_tags.add(tag_sweet)
         assert tag_sweet in rating.taste_tags.all()
@@ -95,7 +95,7 @@ class TestTasteTagM2MProductRating:
         assert TasteTag.objects.filter(pk=tag_sweet.pk).exists()
 
     @pytest.mark.django_db
-    def test_clear_taste_tags_from_rating(self, save_and_clean):
+    def test_clear_taste_tags_from_rating(self, user, save_and_clean):
         tag1 = TasteTag(name="солёный", taste_type="P", slug="soleniy")
         tag2 = TasteTag(name="кислый", taste_type="N", slug="kisliy")
         save_and_clean(tag1)
@@ -116,7 +116,7 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=2)
+        rating = ProductRating(product=product, rate=2, user=user)
         save_and_clean(rating)
         rating.taste_tags.add(tag1, tag2)
         assert rating.taste_tags.count() == 2
@@ -126,7 +126,7 @@ class TestTasteTagM2MProductRating:
         assert TasteTag.objects.filter(pk=tag2.pk).exists()
 
     @pytest.mark.django_db
-    def test_related_name_ratings(self, save_and_clean):
+    def test_related_name_ratings(self, user, save_and_clean):
         tag = TasteTag(name="солёный", taste_type="P", slug="soleniy")
         save_and_clean(tag)
         country = Country(name="Россия")
@@ -145,13 +145,13 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=5)
+        rating = ProductRating(product=product, rate=5, user=user)
         save_and_clean(rating)
         rating.taste_tags.add(tag)
         assert rating in tag.ratings.all()
 
     @pytest.mark.django_db
-    def test_taste_tag_in_multiple_ratings(self, save_and_clean):
+    def test_taste_tag_in_multiple_ratings(self, user, user2, save_and_clean):
         tag = TasteTag(name="солёный", taste_type="P", slug="soleniy")
         save_and_clean(tag)
         country = Country(name="Россия")
@@ -170,8 +170,8 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating1 = ProductRating(product=product, rate=4)
-        rating2 = ProductRating(product=product, rate=5)
+        rating1 = ProductRating(product=product, rate=4, user=user)
+        rating2 = ProductRating(product=product, rate=5, user=user2)
         save_and_clean(rating1)
         save_and_clean(rating2)
         rating1.taste_tags.add(tag)
@@ -180,7 +180,7 @@ class TestTasteTagM2MProductRating:
         assert tag in rating2.taste_tags.all()
 
     @pytest.mark.django_db
-    def test_add_invalid_taste_tag_to_rating(self, save_and_clean):
+    def test_add_invalid_taste_tag_to_rating(self, user, save_and_clean):
         tag = TasteTag(name="123", taste_type="P", slug="invalid")
         country = Country(name="Россия")
         save_and_clean(country)
@@ -198,8 +198,7 @@ class TestTasteTagM2MProductRating:
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=5)
+        rating = ProductRating(product=product, rate=5, user=user)
         save_and_clean(rating)
         with pytest.raises(ValidationError):
             save_and_clean(tag)
-            rating.taste_tags.add(tag)

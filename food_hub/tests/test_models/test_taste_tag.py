@@ -77,3 +77,33 @@ class TestTasteTag:
         with expectation:
             tag = TasteTag(**kwargs)
             save_and_clean(tag)
+
+    def test_custom_manager_positive(self, save_and_clean):
+        tag1 = TasteTag(name="солёный", taste_type="P", slug="soleniy")
+        save_and_clean(tag1)
+        tag2 = TasteTag(name="горький", taste_type="N", slug="gorkiy")
+        save_and_clean(tag2)
+        tag3 = TasteTag(name="сладкий", taste_type="P", slug="slakdkiy")
+        save_and_clean(tag3)
+
+        positive_queryset = TasteTag.positive.all()
+
+        assert tag1 in positive_queryset
+        assert tag3 in positive_queryset
+        assert tag2 not in positive_queryset
+
+    def test_custom_manager_negative(self, save_and_clean):
+        tag1 = TasteTag(name="кислый", taste_type="N", slug="kisliy")
+        save_and_clean(tag1)
+        tag2 = TasteTag(name="горький", taste_type="N", slug="gorkiy")
+        save_and_clean(tag2)
+        tag3 = TasteTag(name="сладкий", taste_type="P", slug="slakdkiy")
+        save_and_clean(tag3)
+
+        negative_queryset = TasteTag.negative.all()
+
+        assert tag1 in negative_queryset
+        assert tag2 in negative_queryset
+        assert tag3 not in negative_queryset
+
+
