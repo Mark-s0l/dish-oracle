@@ -68,9 +68,6 @@ class TasteTag(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    def get_absolute_url(self):
-        return reverse("taste_tag_sort", kwargs={"slug": self.slug})
-
 
 class Category(models.Model):
     name = models.CharField(
