@@ -141,4 +141,4 @@ class SaveRatingView(LoginRequiredMixin, View):
 
         # Regular redirect here — HTMX is not involved at this stage,
         # full page reload is expected
-        return redirect("food_hub:product_list")
+        return redirect("food_hub:home")
