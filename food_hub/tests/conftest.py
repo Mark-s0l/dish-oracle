@@ -14,14 +14,6 @@ def save_and_clean(db):
     return _save
 
 @pytest.fixture(scope="class")
-def user(django_db_blocker):
-    with django_db_blocker.unblock():
-        user = User.objects.create_user(username="testuser", password="testpass")
-    yield user
-    with django_db_blocker.unblock():
-        user.delete()
-
-@pytest.fixture(scope="class")
 def user2(django_db_blocker):
     with django_db_blocker.unblock():
         user = User.objects.create_user(username="testuser2", password="testpass")
