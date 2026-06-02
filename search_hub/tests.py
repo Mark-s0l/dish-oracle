@@ -1,7 +1,19 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 import food_hub.models as models
+
+User = get_user_model()
+
+
+@pytest.fixture(scope="module")
+def user(django_db_blocker):
+    with django_db_blocker.unblock():
+        user = User.objects.create_user(username="testuser", password="testpass")
+    yield user
+    with django_db_blocker.unblock():
+        user.delete()
 
 
 @pytest.fixture
@@ -34,7 +46,8 @@ def category(db):
 
 
 @pytest.fixture
-def setup_products(db, make_company, make_product, category, country):
+def setup_products(db, client, make_company, make_product, category, country, user):
+    client.force_login(user=user)
     c1 = make_company("Завод мороженого")
     c2 = make_company("Вафельный комбинат")
     c3 = make_company("Цех Кремлбрюле")
@@ -73,7 +86,8 @@ def setup_products(db, make_company, make_product, category, country):
     ],
 )
 @pytest.mark.django_db
-def test_product_search(client, setup_products, query, expected):
+def test_product_search(client, setup_products, query, expected, user):
+    client.force_login(user=user)
     url = reverse("search_hub:product_search")
     response = client.get(url, {"query": query})
     found = list(response.context["products"].values_list("name", flat=True))
@@ -82,8 +96,9 @@ def test_product_search(client, setup_products, query, expected):
 
 @pytest.mark.django_db
 def test_filter_by_multiple_tags_and(
-    client, make_company, make_product, category, country
+    client, make_company, make_product, category, country, user
 ):
+    client.force_login(user)
     # теги
     t1 = models.TasteTag.objects.create(name="tag1", slug="tag1", taste_type="P")
     t2 = models.TasteTag.objects.create(name="tag2", slug="tag2", taste_type="P")
@@ -95,13 +110,13 @@ def test_filter_by_multiple_tags_and(
     p_c = make_product(c, "Product C", "0000000000003")  # tag2 only
 
     # рейтинги и привязка тегов
-    r_a = models.ProductRating.objects.create(product=p_a, rate=5)
+    r_a = models.ProductRating.objects.create(product=p_a, rate=5, user=user)
     r_a.taste_tags.add(t1, t2)
 
-    r_b = models.ProductRating.objects.create(product=p_b, rate=4)
+    r_b = models.ProductRating.objects.create(product=p_b, rate=4, user=user)
     r_b.taste_tags.add(t1)
 
-    r_c = models.ProductRating.objects.create(product=p_c, rate=3)
+    r_c = models.ProductRating.objects.create(product=p_c, rate=3, user=user)
     r_c.taste_tags.add(t2)
 
     url = reverse("search_hub:product_search")
@@ -132,8 +147,9 @@ def test_filter_by_multiple_tags_and(
 
 @pytest.mark.django_db
 def test_filter_sort_by_number_of_matching_tags(
-    client, make_company, make_product, category, country
+    client, make_company, make_product, category, country, user
 ):
+    client.force_login(user)
     # теги
     t1 = models.TasteTag.objects.create(name="t1", slug="t1", taste_type="P")
     t2 = models.TasteTag.objects.create(name="t2", slug="t2", taste_type="P")
@@ -146,13 +162,13 @@ def test_filter_sort_by_number_of_matching_tags(
     p3 = make_product(c, "P3 one", "1000000000003")  # t1
 
     # рейтинги и теги
-    r1 = models.ProductRating.objects.create(product=p1, rate=5)
+    r1 = models.ProductRating.objects.create(product=p1, rate=5, user=user)
     r1.taste_tags.add(t1, t2, t3)
 
-    r2 = models.ProductRating.objects.create(product=p2, rate=5)
+    r2 = models.ProductRating.objects.create(product=p2, rate=5, user=user)
     r2.taste_tags.add(t1, t2)
 
-    r3 = models.ProductRating.objects.create(product=p3, rate=5)
+    r3 = models.ProductRating.objects.create(product=p3, rate=5, user=user)
     r3.taste_tags.add(t1)
 
     url = reverse("search_hub:product_search")
@@ -175,7 +191,8 @@ def test_filter_sort_by_number_of_matching_tags(
 
 
 @pytest.mark.django_db
-def test_tags_only_filter(client, make_company, make_product, category, country):
+def test_tags_only_filter(client, make_company, make_product, category, country, user):
+    client.force_login(user)
     t1 = models.TasteTag.objects.create(name="t1", slug="t1", taste_type="P")
     t2 = models.TasteTag.objects.create(name="t2", slug="t2", taste_type="P")
 
@@ -183,10 +200,10 @@ def test_tags_only_filter(client, make_company, make_product, category, country)
     p_ok = make_product(company, "OK", "0000000000001")
     p_bad = make_product(company, "BAD", "0000000000002")
 
-    r_ok = models.ProductRating.objects.create(product=p_ok, rate=5)
+    r_ok = models.ProductRating.objects.create(product=p_ok, rate=5, user=user)
     r_ok.taste_tags.add(t1, t2)
 
-    r_bad = models.ProductRating.objects.create(product=p_bad, rate=3)
+    r_bad = models.ProductRating.objects.create(product=p_bad, rate=3, user=user)
     r_bad.taste_tags.add(t1)
 
     url = reverse("search_hub:product_search")
@@ -198,8 +215,9 @@ def test_tags_only_filter(client, make_company, make_product, category, country)
 
 @pytest.mark.django_db
 def test_clear_action_removes_tags_and_shows_query_results(
-    client, make_company, make_product, category, country
+    client, make_company, make_product, category, country, user
 ):
+    client.force_login(user)
     # теги
     t1 = models.TasteTag.objects.create(name="t1", slug="t1", taste_type="P")
     t2 = models.TasteTag.objects.create(name="t2", slug="t2", taste_type="P")
@@ -209,10 +227,10 @@ def test_clear_action_removes_tags_and_shows_query_results(
     p_ok = make_product(company, "Prod OK", "0000000000001")
     p_bad = make_product(company, "Prod BAD", "0000000000002")
 
-    r_ok = models.ProductRating.objects.create(product=p_ok, rate=5)
+    r_ok = models.ProductRating.objects.create(product=p_ok, rate=5, user=user)
     r_ok.taste_tags.add(t1, t2)
 
-    r_bad = models.ProductRating.objects.create(product=p_bad, rate=3)
+    r_bad = models.ProductRating.objects.create(product=p_bad, rate=3, user=user)
     r_bad.taste_tags.add(t1)
 
     url = reverse("search_hub:product_search")
