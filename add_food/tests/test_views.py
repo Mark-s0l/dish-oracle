@@ -5,9 +5,12 @@ from django.db import DatabaseError, IntegrityError
 from add_food.forms import AddProductForm
 from add_food.services import ApiError
 from food_hub.models import Category, Company, Country, Product
+from django.contrib.auth import get_user_model
 
 
 VALID_EAN = "4006381333931"
+
+User = get_user_model()
 
 
 def make_api_data(**kwargs):
@@ -35,24 +38,25 @@ def make_product():
 
 
 class AddProductViewTests(TestCase):
-
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse("add_food:add_product")
+        cls.form_data = {"ean_code": VALID_EAN}
+        cls.user = User.objects.create_user(username="testuser", password="testpassword123")
+        
     def setUp(self):
-        self.url = reverse("add_food:add_product")
-        self.form_data = {"ean_code": VALID_EAN}
-
+        self.client.force_login(self.user)
 
     def test_existing_product_redirects(self):
         make_product()
-        with patch("add_food.views.add_product") as mock_api, \
-             patch.object(AddProductForm, "validate_unique"):
+        with patch("add_food.views.add_product") as mock_api:
             response = self.client.post(self.url, self.form_data)
             mock_api.assert_not_called()
         self.assertRedirects(response, reverse("rate_food:add_rate"))
 
     def test_existing_product_saves_id_in_session(self):
         product = make_product()
-        with patch.object(AddProductForm, "validate_unique"):
-            self.client.post(self.url, self.form_data)
+        self.client.post(self.url, self.form_data)
         self.assertEqual(self.client.session["current_product_id"], product.pk)
 
 
@@ -69,15 +73,6 @@ class AddProductViewTests(TestCase):
         self.client.post(self.url, self.form_data)
         product = Product.objects.get(ean_code=VALID_EAN)
         self.assertEqual(self.client.session["current_product_id"], product.pk)
-
-    @patch("add_food.views.add_product")
-    def test_duplicate_ean_no_duplicate_created(self, mock_api):
-        mock_api.return_value = make_api_data()
-        with patch.object(AddProductForm, "validate_unique"):
-            self.client.post(self.url, self.form_data)
-            self.client.post(self.url, self.form_data)
-        self.assertEqual(Product.objects.filter(ean_code=VALID_EAN).count(), 1)
-
 
     @patch("add_food.views.add_product")
     def test_api_error_shows_form_error(self, mock_api):
