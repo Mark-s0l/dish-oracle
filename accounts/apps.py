@@ -6,5 +6,4 @@ class AccountsConfig(AppConfig):
     name = "accounts"
 
     def ready(self):
-        from accounts.utils.mailer import Mailer 
-        Mailer.check_connection()
+        from accounts import checks  
