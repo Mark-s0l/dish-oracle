@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from django.core.mail.backends.smtp import EmailBackend
 
-import dish_oracle.settings as settings
+from django.conf import settings
 from accounts.utils.mailer import (Mailer, MailerAuthError,
                                    MailerConnectionError, MailerError)
 
