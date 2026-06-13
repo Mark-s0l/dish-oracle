@@ -12,15 +12,14 @@ See **Deployment** for running in production.
 ---
 
 ## 🧰 Prerequisites
-
-You’ll need:
-
+You'll need:
 - Python 3.11+
 - pip
 - Git
 - Virtualenv *(optional but recommended)*
 - Docker + Docker Compose
 - PostgreSQL (used in Docker by default)
+- Redis (used in Docker by default)
 
 ---
 
@@ -75,6 +74,7 @@ You can now:
 - Rate it with **custom tags** (e.g. *Sweet, Spicy, Plastic, Would eat again*)
 - Re-rate existing products
 - Filter products by **tags** or search by **name**, **company**, **category**
+- Change account email and password
 
 ---
 
@@ -111,10 +111,26 @@ pytest [app_name]
 
 To run this on a live server:
 
-- Set `DEBUG=False` in `.env`  
-- Set valid `ALLOWED_HOSTS`  
-- Run Django with **Gunicorn** or **uWSGI** behind **Nginx**  
+- Set `DEBUG=False` in `.env`
+- Set valid `ALLOWED_HOSTS`
+- Set a new, production-only `SECRET_KEY` (do not reuse the one from `.env.example`)
+- Configure SMTP settings for sending emails — **required**, the deploy check will fail without them
+- Set `CSRF_TRUSTED_ORIGINS` for your domain (needed because of HTMX cross-origin requests)
+- Configure HTTPS via Nginx (e.g. Let's Encrypt) and enable `SECURE_SSL_REDIRECT`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`
+- Set up production logging (avoid the default console-only config)
+- Configure Redis for production (persistence settings, separate instance from dev)
+- Use a separate, production `EAN_DB_JWT` token
+- Set up regular PostgreSQL backups
+- Run Django with **Gunicorn** or **uWSGI** behind **Nginx**
 - Configure static files with `collectstatic`
+
+**Before deploying, always run:**
+
+```bash
+python manage.py check --deploy
+```
+
+This runs the project's deployment checks (including required SMTP configuration) and will report errors for any missing settings.
 
 ---
 
@@ -123,10 +139,13 @@ To run this on a live server:
 - [Django](https://www.djangoproject.com/)
 - [django-environ](https://github.com/joke2k/django-environ)
 - [django-htmx](https://github.com/adamchainz/django-htmx)
+- [django-redis](https://github.com/jazzband/django-redis)
 - [PostgreSQL](https://www.postgresql.org/)
+- [Redis](https://redis.io/)
 - [Docker](https://www.docker.com/)
 - [Requests](https://requests.readthedocs.io/)
 - [Pillow](https://pillow.readthedocs.io/)
+- [python-stdnum](https://github.com/arthurdejong/python-stdnum)
 
 ---
 
@@ -148,9 +167,3 @@ Current release: `v1.0.0`
 
 - [@Mark-s0l](https://github.com/Mark-s0l) — initial design, backend, and project idea.  
 See also the list of [contributors](https://github.com/Mark-s0l/dish-oracle/graphs/contributors).
-
----
-
-## 💬 Acknowledgments
-
-Inspired by frustration at the grocery store 😅
