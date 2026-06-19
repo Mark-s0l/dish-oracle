@@ -10,6 +10,7 @@ from accounts.forms import ChangeEmailUser
 from accounts.tests.factories import UserFactory
 from accounts.utils.cache_manager import CacheError
 from accounts.utils.mailer import Mailer, MailerError
+from accounts.forms import EmailVerificationCode
 
 User = get_user_model()
 
@@ -238,3 +239,56 @@ class TestChangePasswordView(ViewBaseMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, self.template_name)
         self.assertFalse(response.context["form"].is_valid())
+
+
+class TestVerificationChangePassword(ViewBaseMixin, TestCase):
+    template_name = "accounts/verification_email_code.html"
+    form_class = EmailVerificationCode
+    profile_url = reverse_lazy("accounts:profile")
+    change_password_url = reverse("accounts:change_password")
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.url = reverse("accounts:verification_change_password")
+
+    def setUp(self):
+        super().setUp()
+        patcher = patch("accounts.views.CacheManager")
+        self.mock_cache_cls = patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _post(self):
+        response = self.client.post(self.url)
+        self.mock_cache_cls.assert_called_once_with(self.user.id)
+        return response
+
+    def test_happy_dispatch(self):
+        mock_cache = self.mock_cache_cls.return_value
+        mock_cache.cache_get.return_value = "valid_data"
+
+        response = self._post()
+
+        mock_cache.cache_get.assert_called_once_with("password_change")
+
+    def test_cache_error_dispatch(self):
+        mock_cache = self.mock_cache_cls.return_value
+        mock_cache.cache_get.side_effect = CacheError
+
+        response = self._post()
+
+        mock_cache.cache_get.assert_called_once_with("password_change")
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(str(messages_list[0]), "Произошла ошибка. Попробуйте позже")
+        self.assertRedirects(response, self.profile_url, fetch_redirect_response=False)
+
+    def test_not_data_dispatch(self):
+        mock_cache = self.mock_cache_cls.return_value
+        mock_cache.cache_get.return_value = None
+
+        response = self._post()
+
+        mock_cache.cache_get.assert_called_once_with("password_change")
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(str(messages_list[0]), "Сессия истекла. Попробуйте еще раз")
+        self.assertRedirects(response, self.change_password_url, fetch_redirect_response=False)
