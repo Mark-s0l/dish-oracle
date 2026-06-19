@@ -1,4 +1,4 @@
-﻿from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import (SearchQuery, SearchRank,
                                             SearchVector)
 from django.db.models import Q
