@@ -29,6 +29,6 @@ urlpatterns = [
     path('accounts/', include('accounts.urls', namespace='accounts')),
 ]
 
-# Для разработки: отдача медиафайлов через Django
+# For development: serving media files via Django
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
