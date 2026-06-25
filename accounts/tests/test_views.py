@@ -1,16 +1,17 @@
-from unittest.mock import call, patch
+from unittest.mock import MagicMock, call, patch
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 
-from accounts.forms import ChangeEmailUser
+from accounts.forms import ChangeEmailUser, EmailVerificationCode
 from accounts.tests.factories import UserFactory
 from accounts.utils.cache_manager import CacheError
 from accounts.utils.mailer import Mailer, MailerError
-from accounts.forms import EmailVerificationCode
+from accounts.views import MAX_ATTEMPTS
 
 User = get_user_model()
 
@@ -291,4 +292,219 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
         mock_cache.cache_get.assert_called_once_with("password_change")
         messages_list = list(response.wsgi_request._messages)
         self.assertEqual(str(messages_list[0]), "Сессия истекла. Попробуйте еще раз")
-        self.assertRedirects(response, self.change_password_url, fetch_redirect_response=False)
+        self.assertRedirects(
+            response, self.change_password_url, fetch_redirect_response=False
+        )
+
+    @patch("accounts.views.update_session_auth_hash")
+    @patch("accounts.views.check_password")
+    @patch("accounts.views.mailer")
+    def test_form_valid_happy_path(
+        self, mock_mailer, mock_check_password, mock_update_session
+    ):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        session_key = self.client.session.session_key
+
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": session_key,
+            },
+            "password_change_attempt": None,
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+        mock_check_password.return_value = True
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        self.mock_cache_cls.assert_called_with(self.user.id)
+
+        mock_check_password.assert_called_once_with("123456", "hashed_code")
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.password, "new_hashed_password")
+
+        mock_update_session.assert_called_once_with(response.wsgi_request, self.user)
+        mock_cache_manager.cache_del.assert_called_once_with("password_change")
+        mock_mailer.send.assert_called_once()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response, reverse("accounts:profile"), fetch_redirect_response=False
+        )
+
+    def test_form_valid_cache_error(self):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        mock_cache_manager.cache_get.side_effect = [
+            MagicMock(),  # To successfully complete the dispatch
+            CacheError,
+        ]
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(str(messages_list[0]), "Произошла ошибка. Попробуйте позже")
+        self.assertRedirects(
+            response, reverse("accounts:profile"), fetch_redirect_response=False
+        )
+
+    @patch("accounts.views.mailer")
+    def test_form_valid_attempt_exceeded(self, mock_mailer):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": "x",
+            },
+            "password_change_attempt": {"attempt": MAX_ATTEMPTS + 1},
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        mock_mailer.send.assert_called_once()
+        mock_cache_manager.cache_del.assert_called_once_with("password_change")
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(
+            str(messages_list[0]), "Слишком много ошибок, попробуйте позже"
+        )
+        self.assertRedirects(response, self.profile_url, fetch_redirect_response=False)
+
+    @patch("accounts.views.mailer")
+    def test_form_valid_attempt_exceeded_mailer_error(self, mock_mailer):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": "x",
+            },
+            "password_change_attempt": {"attempt": MAX_ATTEMPTS + 1},
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+        mock_mailer.send.side_effect = MailerError
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        mock_cache_manager.cache_del.assert_called_once_with("password_change")
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(
+            str(messages_list[0]), "Слишком много ошибок, попробуйте позже"
+        )
+        self.assertRedirects(response, self.profile_url, fetch_redirect_response=False)
+
+    def test_form_valid_no_data(self):
+        # data expires after passing dispatch
+        mock_cache_manager = self.mock_cache_cls.return_value
+        mock_cache_manager.cache_get.side_effect = [
+            {
+                "code": "x",
+                "hash": "x",
+                "session_key": "x",
+            },  # dispatch: cache_get("password_change")
+            None,  # form_valid: cache_get("password_change_attempt")
+            None,  # form_valid: cache_get("password_change")
+        ]
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(str(messages_list[0]), "Сессия истекла. Попробуйте еще раз")
+        self.assertRedirects(
+            response, self.change_password_url, fetch_redirect_response=False
+        )
+
+    @patch("accounts.views.check_password")
+    def test_form_valid_wrong_code(self, mock_check_password):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": "x",
+            },
+            "password_change_attempt": None,
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+        mock_check_password.return_value = False
+
+        response = self.client.post(self.url, data={"code": 999999})
+
+        mock_check_password.assert_called_once_with("999999", "hashed_code")
+        mock_cache_manager.cache_set.assert_called_once_with(
+            "password_change_attempt", {"attempt": 1}, timeout=3600
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, self.template_name)
+
+    @patch("accounts.views.check_password")
+    def test_form_valid_wrong_code_cache_error(self, mock_check_password):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": "x",
+            },
+            "password_change_attempt": None,
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+        mock_check_password.return_value = False
+        mock_cache_manager.cache_set.side_effect = CacheError
+
+        response = self.client.post(self.url, data={"code": "999999"})
+        messages_list = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages_list[0]), "Произошла ошибка. Попробуйте позже")
+        self.assertRedirects(response, self.profile_url, fetch_redirect_response=False)
+
+    @patch("accounts.views.check_password")
+    def test_form_valid_session_key_mismatch(self, mock_check_password):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": "wrong_session_key",
+            },
+            "password_change_attempt": None,
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+        mock_check_password.return_value = True
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(str(messages_list[0]), "Сессия истекла. Попробуйте еще раз")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, self.template_name)
+
+    @patch("accounts.views.update_session_auth_hash")
+    @patch("accounts.views.check_password")
+    @patch("accounts.views.mailer")
+    def test_form_valid_mailer_error_on_success(
+        self, mock_mailer, mock_check_password, mock_update_session
+    ):
+        mock_cache_manager = self.mock_cache_cls.return_value
+        session_key = self.client.session.session_key
+        cache_data = {
+            "password_change": {
+                "code": "hashed_code",
+                "hash": "new_hashed_password",
+                "session_key": session_key,
+            },
+            "password_change_attempt": None,
+        }
+        mock_cache_manager.cache_get.side_effect = cache_data.get
+        mock_check_password.return_value = True
+        mock_mailer.send.side_effect = MailerError
+
+        response = self.client.post(self.url, data={"code": "123456"})
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.password, "new_hashed_password")
+        mock_cache_manager.cache_del.assert_called_once_with("password_change")
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(str(messages_list[0]), "Пароль успешно изменен")
+        self.assertRedirects(response, self.profile_url, fetch_redirect_response=False)
