@@ -22,7 +22,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('list/', include('food_hub.urls', namespace='food_hub')),
+    path('home/', include('food_hub.urls', namespace='food_hub')),
     path('search/', include('search_hub.urls', namespace='search_hub')),
     path('add/', include('add_food.urls', namespace='add_food')),
     path('rate/', include('rate_food.urls', namespace='rate_food')),
