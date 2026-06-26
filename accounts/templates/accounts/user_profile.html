@@ -49,6 +49,8 @@
       <div class="email-form-error">{{ error }}</div>
     {% endfor %}
   </div>
-
+  <a href="{% url 'accounts:change_password' %}" class="submit-btn is-visible">
+  Сменить пароль
+  </a>
 </div>
 {% endblock %}

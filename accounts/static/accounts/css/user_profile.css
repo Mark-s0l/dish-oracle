@@ -151,3 +151,24 @@ body {
   color: #c0392b;
   font-size: 13px;
 }
+
+.submit-btn {
+    display: inline-block;
+    background-color: #97b85c;
+    color: #5c6640;
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 400;
+    text-decoration: none;
+    text-align: center;
+    line-height: 1.4;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.submit-btn:hover {
+    background-color: #87a84e;
+    opacity: 0.95;
+}
