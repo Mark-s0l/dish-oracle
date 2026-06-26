@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'accounts/css/verification_code.css' %}">
+{% endblock %}
 {% block content %}
 
 <div class="verification-wrapper">
