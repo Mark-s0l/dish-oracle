@@ -2,12 +2,11 @@ from unittest.mock import MagicMock, call, patch
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 
-from accounts.forms import ChangeEmailUser, EmailVerificationCode
+from accounts.forms import ChangeEmailUser, EmailVerificationCode, ChangePasswordForm
 from accounts.tests.factories import UserFactory
 from accounts.utils.cache_manager import CacheError
 from accounts.utils.mailer import Mailer, MailerError
@@ -65,7 +64,7 @@ class TestUserProfileView(ViewBaseMixin, TestCase):
 class TestChangePasswordView(ViewBaseMixin, TestCase):
 
     template_name = "accounts/change_password.html"
-    form_class = PasswordChangeForm
+    form_class = ChangePasswordForm
     success_url = reverse_lazy("accounts:verification_change_password")
     except_url = reverse("accounts:profile")
 

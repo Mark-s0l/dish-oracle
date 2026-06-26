@@ -4,14 +4,13 @@ import secrets
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 
-from accounts.forms import ChangeEmailUser, EmailVerificationCode
+from accounts.forms import ChangeEmailUser, EmailVerificationCode, ChangePasswordForm
 from accounts.models import CustomUser
 from accounts.utils.cache_manager import CacheError, CacheManager
 from accounts.utils.mailer import Mailer, MailerError
@@ -34,7 +33,7 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
 
 class ChangePasswordView(LoginRequiredMixin, FormView):
-    form_class = PasswordChangeForm
+    form_class = ChangePasswordForm
     template_name = "accounts/change_password.html"
     success_url = reverse_lazy("accounts:verification_change_password")
 
