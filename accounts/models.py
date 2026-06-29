@@ -4,5 +4,13 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomUser(AbstractUser):
-    avatar = models.ImageField(default="default_image_profile", upload_to="static/icons")
+    avatar = models.ImageField(
+        upload_to="avatars/",
+        blank=True,
+        null=True
+    )
 
+    def get_avatar(self):
+        if self.avatar:
+            return self.avatar.url
+        return "/static/icons/default_image_profile.svg"
