@@ -20,14 +20,10 @@
     </button>
   </form>
 
-  <div class="user-info">
-    {% if object.avatar %}
-      <img class="avatar" src="{{ object.avatar.url }}" alt="Фото профиля">
-    {% else %}
-      <div class="avatar avatar--placeholder"></div>
-    {% endif %}
+<div class="user-info">
+    <img class="avatar" src="{{ object.get_avatar }}" alt="Фото профиля">
     <span class="username">{{ object.username }}</span>
-  </div>
+</div>
 
   <div class="email-section">
     <p class="email-label">e-mail:</p>
