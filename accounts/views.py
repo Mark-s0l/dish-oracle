@@ -10,10 +10,11 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 
-from accounts.forms import ChangeEmailUser, EmailVerificationCode, ChangePasswordForm
+from accounts.forms import ChangeEmailUser, EmailVerificationCode, ChangePasswordForm, SignUpUserForm
 from accounts.models import CustomUser
 from accounts.utils.cache_manager import CacheError, CacheManager
 from accounts.utils.mailer import Mailer, MailerError
+from django.contrib.auth import login
 
 logger = logging.getLogger("accounts")
 
@@ -197,3 +198,23 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
             f"[CHANGE_PASSWORD] User={self.request.user.id} successfully changed the password"
         )
         return super().form_valid(form)
+
+
+class SignUpUser(FormView):
+    form_class = SignUpUserForm
+    template_name = "accounts/sign_up_user.html"
+    success_url = reverse_lazy("accounts:profile")
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user, backend="accounts.backends.EmailBackend")
+        try:
+            mailer.send(
+                subject="Успешная регистрация",
+                message=f"Вы были успешно зарегистрированы! Если это были не вы, пожалуйте, игнорируйте данное письмо",
+                recipient_list=[self.request.user.email],
+            )
+        except MailerError:
+            logger.warning(f"[SIGN_UP]: Failed to send registration notification email; user={self.request.user.id}")
+        return redirect(self.success_url)
+
