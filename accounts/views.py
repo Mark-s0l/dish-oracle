@@ -16,6 +16,8 @@ from accounts.utils.cache_manager import CacheError, CacheManager
 from accounts.utils.mailer import Mailer, MailerError
 from django.contrib.auth import login
 
+from accounts.tasks import send_registration_email_task
+
 logger = logging.getLogger("accounts")
 
 MAX_ATTEMPTS = 5
@@ -208,13 +210,6 @@ class SignUpUser(FormView):
     def form_valid(self, form):
         user = form.save()
         login(self.request, user, backend="accounts.backends.EmailBackend")
-        try:
-            mailer.send(
-                subject="Успешная регистрация",
-                message=f"Вы были успешно зарегистрированы! Если это были не вы, пожалуйте, игнорируйте данное письмо",
-                recipient_list=[self.request.user.email],
-            )
-        except MailerError:
-            logger.warning(f"[SIGN_UP]: Failed to send registration notification email; user={self.request.user.id}")
-        return redirect(self.success_url)
+        send_registration_email_task.delay(user.id, user.email)
+        return super().form_valid(form)
 
