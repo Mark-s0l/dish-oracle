@@ -50,7 +50,7 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
         try:
             counter = cache_manager.cache_get(key="password_change_attempt")
         except CacheError:
-            messages.info(
+            messages.error(
                 self.request,
                 "Произошла ошибка. Попробуйте позже",
             )
@@ -81,7 +81,7 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
                 "password_change_attempt", {"attempt": attempt}, timeout=3600
             )
         except CacheError:
-            messages.info(
+            messages.error(
                 self.request,
                 "Произошла ошибка. Попробуйте позже",
             )
@@ -94,7 +94,7 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
                 recipient_list=[self.request.user.email],
             )
         except MailerError:
-            messages.info(self.request, "Ошибка отправки письма. Попробуйте позже")
+            messages.error(self.request, "Ошибка отправки письма. Попробуйте позже")
             return redirect("accounts:profile")
 
         logger.info(f"[CHANGE_PASSWD] User={
@@ -114,7 +114,7 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
             cache_manager = CacheManager(request.user.id)
             data = cache_manager.cache_get("password_change")
         except CacheError:
-            messages.info(request, "Произошла ошибка. Попробуйте позже")
+            messages.error(request, "Произошла ошибка. Попробуйте позже")
             return redirect("accounts:profile")
         if not data:
             messages.info(self.request, "Сессия истекла. Попробуйте еще раз")
@@ -128,7 +128,7 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
             counter_attempt = cache_manager.cache_get("password_change_attempt")
             data = cache_manager.cache_get("password_change")
         except CacheError:
-            messages.info(
+            messages.error(
                 self.request,
                 "Произошла ошибка. Попробуйте позже",
             )
@@ -168,10 +168,10 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
                 )
             except CacheError:
                 logger.error(f"[CHANGE_PASSWD] Cache set error", exc_info=True)
-                messages.info(self.request, "Произошла ошибка. Попробуйте позже")
+                messages.error(self.request, "Произошла ошибка. Попробуйте позже")
                 return redirect("accounts:profile")
 
-            form.add_error(None, "Неверный код")
+            form.add_error("code", "Неверный код")
             return super().form_invalid(form)
 
         if self.request.session.session_key != session_key:
@@ -190,7 +190,7 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
             log_context="[CHANGE_PASSWD]",
         )
 
-        messages.info(self.request, "Пароль успешно изменен")
+        messages.success(self.request, "Пароль успешно изменен")
         logger.info(
             f"[CHANGE_PASSWD] User={self.request.user.id} successfully changed the password"
         )
