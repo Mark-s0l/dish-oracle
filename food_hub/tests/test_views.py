@@ -11,13 +11,13 @@ User = get_user_model()
 
 @pytest.fixture
 def user(db):
-    return User.objects.create_user(username="testuser", password="testpass")
+    return User.objects.create_user(username="testuser", email="tmail@inbox.com", password="testpass")
 
 
 @pytest.fixture
 def make_user(db):
-    def _make(username):
-        return User.objects.create_user(username=username, password="testpass")
+    def _make(username, email):
+        return User.objects.create_user(username=username, email=email, password="testpass")
 
     return _make
 
@@ -65,8 +65,8 @@ def test_current_url(user, client):
 
 @pytest.mark.django_db
 def test_unique_product_for_user(make_user, make_product, client):
-    user1 = make_user("Viva")
-    user2 = make_user("Python")
+    user1 = make_user("Viva", "t1@mail.ru")
+    user2 = make_user("Python", "t2@mail.ru")
 
     product1 = make_product("Мороженое", "4006381333931")
     product2 = make_product("Йогурт", "1234567890123")
