@@ -6,7 +6,8 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 
-from accounts.forms import ChangeEmailUser, EmailVerificationCode, ChangePasswordForm
+from accounts.forms import ChangeEmailUser, ChangePasswordForm, EmailVerificationCode
+from accounts.tasks import send_email_task
 from accounts.tests.factories import UserFactory
 from accounts.utils.cache_manager import CacheError
 from accounts.utils.mailer import Mailer, MailerError
@@ -297,9 +298,9 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
 
     @patch("accounts.views.update_session_auth_hash")
     @patch("accounts.views.check_password")
-    @patch("accounts.views.mailer")
+    @patch("accounts.tasks.send_email_task.delay")
     def test_form_valid_happy_path(
-        self, mock_mailer, mock_check_password, mock_update_session
+        self, mock_delay, mock_check_password, mock_update_session
     ):
         mock_cache_manager = self.mock_cache_cls.return_value
         session_key = self.client.session.session_key
@@ -326,7 +327,7 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
 
         mock_update_session.assert_called_once_with(response.wsgi_request, self.user)
         mock_cache_manager.cache_del.assert_called_once_with("password_change")
-        mock_mailer.send.assert_called_once()
+        mock_delay.assert_called_once()
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
@@ -348,8 +349,8 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
             response, reverse("accounts:profile"), fetch_redirect_response=False
         )
 
-    @patch("accounts.views.mailer")
-    def test_form_valid_attempt_exceeded(self, mock_mailer):
+    @patch("accounts.tasks.send_email_task.delay")
+    def test_form_valid_attempt_exceeded(self, mock_delay):
         mock_cache_manager = self.mock_cache_cls.return_value
         cache_data = {
             "password_change": {
@@ -363,7 +364,7 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
 
         response = self.client.post(self.url, data={"code": "123456"})
 
-        mock_mailer.send.assert_called_once()
+        mock_delay.assert_called_once()
         mock_cache_manager.cache_del.assert_called_once_with("password_change")
         messages_list = list(response.wsgi_request._messages)
         self.assertEqual(
