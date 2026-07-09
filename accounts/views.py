@@ -1,14 +1,15 @@
 import logging
 import secrets
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
+from kombu.exceptions import OperationalError
 
 from accounts.forms import (ChangeEmailUser, ChangePasswordForm,
                             EmailVerificationCode, SignUpUserForm)
@@ -203,12 +204,23 @@ class SignUpUser(FormView):
     success_url = reverse_lazy("accounts:profile")
 
     def form_valid(self, form):
-        user = form.save()
+        try:
+            user = form.save()
+        except IntegrityError:
+            form.add_error(None, "Такой пользователь уже зарегистрирован")
+            return self.form_invalid(form)
         login(self.request, user, backend="accounts.backends.EmailBackend")
-        send_email_task.delay(
-            subject="Успешная регистрация",
-            message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
-            recipient_list=[user.email],
-            log_context="SIGN_UP",
-        )
+        try:
+            send_email_task.delay(
+                subject="Успешная регистрация",
+                message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
+                recipient_list=[user.email],
+                log_context="SIGN_UP",
+            )
+        except OperationalError:
+            logger.error(
+                f"[SIGN_UP]: Redis недоступен при постановке задачи; email={user.email}",
+                exc_info=True,
+            )
+
         return super().form_valid(form)
