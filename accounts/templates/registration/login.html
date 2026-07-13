@@ -1,12 +1,44 @@
 {% extends "base.html" %}
-{% block title %} Вход {% endblock %}
+{% load static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+{% endblock %}
+{% block title %}Вход{% endblock %}
+
 {% block content %}
-<h2> Вход </h2>
 <div class="auth">
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <p><input type="submit" value="Войти"></p>
-  </form>
+    <div class="auth__logo">
+        <img src="{% static 'icons/logo.svg' %}" alt="Логотип" class="auth__logo-img">
+    </div>
+
+    <form method="post" class="auth__form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="auth__errors">
+            {% for error in form.non_field_errors %}
+            <p class="auth__error">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="auth__field">
+            {{ form.username }}
+            {% if form.username.errors %}
+            <p class="auth__error">{{ form.username.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="auth__field">
+            {{ form.password }}
+            {% if form.password.errors %}
+            <p class="auth__error">{{ form.password.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="auth__submit">Вход</button>
+    </form>
+
+    <a href="{% url 'accounts:sign_up_user' %}" class="auth__link">Регистрация</a>
 </div>
 {% endblock %}
