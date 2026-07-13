@@ -1,7 +1,7 @@
 from django import forms
 from accounts.models import CustomUser
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import PasswordChangeForm, BaseUserCreationForm
+from django.contrib.auth.forms import PasswordChangeForm, BaseUserCreationForm, AuthenticationForm
 
 class ChangeEmailUser(forms.ModelForm):
     def clean_email(self):
@@ -51,3 +51,15 @@ class SignUpUserForm(BaseUserCreationForm):
     class Meta:
         model = CustomUser
         fields = ["username", "email", "password1", "password2"]
+
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({
+            "class": "auth__input",
+            "placeholder": "Логин или e-mail",
+        })
+        self.fields["password"].widget.attrs.update({
+            "class": "auth__input",
+            "placeholder": "Пароль",
+        })
