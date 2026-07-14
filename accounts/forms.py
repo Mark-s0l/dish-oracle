@@ -52,6 +52,26 @@ class SignUpUserForm(BaseUserCreationForm):
         model = CustomUser
         fields = ["username", "email", "password1", "password2"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["username"].widget.attrs.update({
+            "class": "auth__input",
+            "placeholder": "Логин",
+        })
+        self.fields["email"].widget.attrs.update({
+            "class": "auth__input",
+            "placeholder": "E-mail",
+        })
+        self.fields["password1"].widget.attrs.update({
+            "class": "auth__input",
+            "placeholder": "Пароль",
+        })
+        self.fields["password2"].widget.attrs.update({
+            "class": "auth__input",
+            "placeholder": "Пароль ещё раз",
+        })
+
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
