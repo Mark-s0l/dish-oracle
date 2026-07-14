@@ -3,15 +3,19 @@ from unittest.mock import MagicMock, call, patch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
+from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse, reverse_lazy
+from kombu.exceptions import OperationalError
 
-from accounts.forms import ChangeEmailUser, ChangePasswordForm, EmailVerificationCode
+from accounts.forms import (ChangeEmailUser, ChangePasswordForm,
+                            EmailVerificationCode, LoginForm, SignUpUserForm)
+from accounts.models import CustomUser
 from accounts.tasks import send_email_task
 from accounts.tests.factories import UserFactory
 from accounts.utils.cache_manager import CacheError
 from accounts.utils.mailer import Mailer, MailerError
-from accounts.views import MAX_ATTEMPTS
+from accounts.views import MAX_ATTEMPTS, send_email_task
 
 User = get_user_model()
 
@@ -508,3 +512,76 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
         messages_list = list(response.wsgi_request._messages)
         self.assertEqual(str(messages_list[0]), "Пароль успешно изменен")
         self.assertRedirects(response, self.profile_url, fetch_redirect_response=False)
+
+
+class TestSignUpUser(TestCase):
+    success_url = reverse_lazy("accounts:profile")
+    url = reverse("accounts:sign_up_user")
+
+    def setUp(self):
+        self.valid_data = {
+            "username": "valid_username",
+            "email": "valid_mail@inbox.com",
+            "password1": "ValidPassword123!",
+            "password2": "ValidPassword123!",
+        }
+
+    @patch("accounts.views.send_email_task.delay")
+    def test_happy_sign_up_path(self, delay_mock):
+        response = self.client.post(self.url, data=self.valid_data)
+        self.assertTrue(
+            CustomUser.objects.filter(
+                username="valid_username", email="valid_mail@inbox.com"
+            ).exists()
+        )
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+        delay_mock.assert_called_once_with(
+            subject="Успешная регистрация",
+            message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
+            recipient_list=["valid_mail@inbox.com"],
+            log_context="SIGN_UP",
+        )
+        self.assertRedirects(response, self.success_url)
+
+    @patch("accounts.views.send_email_task.delay")
+    @patch("accounts.forms.SignUpUserForm.save", side_effect=IntegrityError)
+    def test_integrity_error_on_race_condition(self, save_mock, delay_mock):
+        response = self.client.post(self.url, data=self.valid_data)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+        delay_mock.assert_not_called()
+
+        form = response.context["form"]
+        self.assertIn("Такой пользователь уже зарегистрирован", form.non_field_errors())
+
+    @patch("accounts.views.send_email_task.delay", side_effect=OperationalError)
+    def test_operational_error(self, delay_mock):
+        with self.assertLogs("accounts", level="ERROR") as cm:
+            response = self.client.post(self.url, data=self.valid_data)
+        self.assertIn("SIGN_UP", cm.output[0])
+        self.assertTrue(
+            CustomUser.objects.filter(
+                username="valid_username", email="valid_mail@inbox.com"
+            ).exists()
+        )
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+        delay_mock.assert_called_once_with(
+            subject="Успешная регистрация",
+            message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
+            recipient_list=["valid_mail@inbox.com"],
+            log_context="SIGN_UP",
+        )
+        self.assertRedirects(response, self.success_url)
+
+    def test_invalid_form_shows_errors(self):
+        data = {**self.valid_data, "password2": "Mismatch123!"}
+        response = self.client.post(self.url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(CustomUser.objects.filter(username="valid_username").exists())
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        self.assertIn("password2", response.context["form"].errors)
