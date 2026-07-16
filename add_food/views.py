@@ -7,6 +7,7 @@ from add_food.services import ApiError, add_product
 from food_hub.models import Category, Company, Country, Product
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 class AddProductView(LoginRequiredMixin, FormView):
@@ -34,6 +35,22 @@ class AddProductView(LoginRequiredMixin, FormView):
             except IntegrityError:
                 product = Product.objects.get(ean_code=ean)
         return product
+
+    def get(self, request, *args, **kwargs):
+        ean = request.GET.get("ean")
+        if ean:
+            try:
+                product = Product.objects.get(ean_code=ean)
+            except Product.DoesNotExist:
+                messages.error(
+                    self.request,
+                    "Данного продукта не существует")
+                return redirect("food_hub:home")
+
+            request.session["current_product_id"] = product.pk
+            return redirect("rate_food:add_rate")
+
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         ean = form.cleaned_data["ean_code"]

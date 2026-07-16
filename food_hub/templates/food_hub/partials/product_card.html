@@ -27,6 +27,9 @@
                             <img src="{% static 'rate_food/icons/star-icon.svg' %}" class="pcard__star" alt="">
                         {% endif %}
                     {% endfor %}
+                    <a href="{% url 'add_food:add_product' %}?ean={{ product.ean_code }}" class="rate-icon-link">
+                        <img src="{% static 'accounts/icons/edit_icon.svg' %}" alt="Редактировать" class="rate-icon">
+                    </a>
                 {% endif %}
                 {% endwith %}
             </div>
