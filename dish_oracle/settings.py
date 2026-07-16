@@ -243,13 +243,6 @@ LOGGING = {
     },
 }
 
-# ONLY FOR DEV SERVER - REPLACE IN PROD
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.ngrok-free.dev",
-    "https://*.ngrok.app",
-    "https://*.ngrok.io",
-]   
-
 MESSAGE_TAGS = {
     messages.DEBUG:    'secondary',
     messages.INFO:     'info',
