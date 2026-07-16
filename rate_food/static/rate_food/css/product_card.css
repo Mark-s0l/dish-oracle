@@ -65,3 +65,12 @@
     width: 20px;
     height: 20px;
 }
+
+.incorrect_product {
+    display: block;
+    width: fit-content;
+    margin: 14px auto 0;
+    color: #8db66d;
+    text-decoration: underline;
+    font-size: 16px;
+}
