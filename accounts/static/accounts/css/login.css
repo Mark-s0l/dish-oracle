@@ -1,0 +1,118 @@
+:root {
+  --color-bg: #ffffff;
+  --color-cream: #f6efdc;
+  --color-olive: #a6c46e;   
+  --color-olive-dark: #8bab54;
+  --color-purple: #9385d9;
+  --color-text-muted: #b7c194;
+  --color-text-dark: #4a4a3a;
+  --color-link: #7c8a52;      
+  --color-error: #c15a4c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+}
+
+.auth {
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 56px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth__logo {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 44px;
+}
+
+.auth__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.auth__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth__field {
+  width: 100%;
+}
+
+.auth__field input {
+  width: 100%;
+  padding: 18px 22px;
+  background-color: var(--color-cream);
+  border: 2px solid var(--color-olive);
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--color-text-dark);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth__field input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.auth__field input:focus {
+  border-color: var(--color-olive-dark);
+  box-shadow: 0 0 0 3px rgba(166, 196, 110, 0.25);
+}
+
+.auth__submit {
+  margin-top: 10px;
+  width: 100%;
+  padding: 18px;
+  background-color: var(--color-olive);
+  border: none;
+  border-radius: 30px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.auth__submit:hover {
+  background-color: var(--color-olive-dark);
+}
+
+.auth__submit:active {
+  transform: translateY(1px);
+}
+
+.auth__link {
+  margin-top: 26px;
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.auth__errors {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.auth__error {
+  color: var(--color-error);
+  font-size: 13px;
+  margin: 4px 2px 0;
+}

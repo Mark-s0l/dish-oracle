@@ -1,8 +1,9 @@
-version: '3.9'
-
 services:
   db:
-    image: postgres-ru # кастомный образ PostgreSQL с локалью
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: postgres-ru #custom PostgreSQL image with Russian locale
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -10,8 +11,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     restart: always
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
 
 volumes:
   pgdata:

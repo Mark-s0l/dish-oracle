@@ -6,7 +6,7 @@ from food_hub.models import Category, Company, Country, Product, ProductRating
 
 class TestProductRatingProduct():
     @pytest.mark.django_db
-    def test_productrating_product_fk_success(self, save_and_clean):
+    def test_productrating_product_fk_success(self, user, save_and_clean):
         country = Country(name="Россия")
         save_and_clean(country)
         company = Company(name="Компания", country=country)
@@ -23,21 +23,21 @@ class TestProductRatingProduct():
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=5)
+        rating = ProductRating(product=product, rate=5, user=user)
         save_and_clean(rating)
         assert rating.product == product
         assert rating.product.name == "Мороженое"
 
 
     @pytest.mark.django_db
-    def test_productrating_product_fk_required(self, save_and_clean):
-        rating = ProductRating(product=None, rate=4)
+    def test_productrating_product_fk_required(self, user, save_and_clean):
+        rating = ProductRating(product=None, rate=4, user=user)
         with pytest.raises(ValidationError):
             save_and_clean(rating)
 
 
     @pytest.mark.django_db
-    def test_productrating_delete_does_not_delete_product(self, save_and_clean):
+    def test_productrating_delete_does_not_delete_product(self, user, save_and_clean):
         country = Country(name="Россия")
         save_and_clean(country)
         company = Company(name="Компания", country=country)
@@ -54,14 +54,14 @@ class TestProductRatingProduct():
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=3)
+        rating = ProductRating(product=product, rate=3, user=user)
         save_and_clean(rating)
         rating.delete()
         assert Product.objects.filter(pk=product.pk).exists()
 
 
     @pytest.mark.django_db
-    def test_product_delete_cascades_to_ratings(self, save_and_clean):
+    def test_product_delete_cascades_to_ratings(self, user, save_and_clean):
         country = Country(name="Россия")
         save_and_clean(country)
         company = Company(name="Компания", country=country)
@@ -78,14 +78,14 @@ class TestProductRatingProduct():
             ),
         )
         save_and_clean(product)
-        rating = ProductRating(product=product, rate=4)
+        rating = ProductRating(product=product, rate=4, user=user)
         save_and_clean(rating)
         product.delete()
         assert not ProductRating.objects.filter(pk=rating.pk).exists()
 
 
     @pytest.mark.django_db
-    def test_productrating_change_product(self, save_and_clean):
+    def test_productrating_change_product(self, user, save_and_clean):
         country = Country(name="Россия")
         save_and_clean(country)
         company = Company(name="Компания", country=country)
@@ -112,7 +112,7 @@ class TestProductRatingProduct():
         )
         save_and_clean(product1)
         save_and_clean(product2)
-        rating = ProductRating(product=product1, rate=2)
+        rating = ProductRating(product=product1, rate=2, user=user)
         save_and_clean(rating)
         rating.product = product2
         save_and_clean(rating)
@@ -120,7 +120,7 @@ class TestProductRatingProduct():
 
 
     @pytest.mark.django_db
-    def test_multiple_ratings_for_one_product(self, save_and_clean):
+    def test_multiple_ratings_for_one_product(self, user, user2, save_and_clean):
         country = Country(name="Россия")
         save_and_clean(country)
         company = Company(name="Компания", country=country)
@@ -137,8 +137,8 @@ class TestProductRatingProduct():
             ),
         )
         save_and_clean(product)
-        rating1 = ProductRating(product=product, rate=5)
-        rating2 = ProductRating(product=product, rate=4)
+        rating1 = ProductRating(product=product, rate=5, user=user)
+        rating2 = ProductRating(product=product, rate=4, user=user2)
         save_and_clean(rating1)
         save_and_clean(rating2)
         ratings = list(ProductRating.objects.filter(product=product))

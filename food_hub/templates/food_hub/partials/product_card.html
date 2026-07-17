@@ -9,14 +9,16 @@
     </div>
     <div class="pcard__body">
         <div class="pcard__name">{{ product.name }}</div>
-        <div class="pcard__tags">
-            {% for name in product.tag_names %}
-                <span class="pcard__tag">{{ name }}</span>
-            {% endfor %}
-        </div>
+            <div class="pcard__tags">
+                {% for rating in product.user_ratings %}
+                    {% for tag in rating.taste_tags.all %}
+                        <span class="pcard__tag">{{ tag.name }}</span>
+                    {% endfor %}
+                {% endfor %}
+            </div>
         <div class="pcard__bottom">
             <div class="pcard__stars">
-                {% with rating=product.ratings.first %}
+                {% with rating=product.user_ratings|first %}
                 {% if rating %}
                     {% for i in "12345" %}
                         {% if forloop.counter <= rating.rate %}
@@ -25,6 +27,9 @@
                             <img src="{% static 'rate_food/icons/star-icon.svg' %}" class="pcard__star" alt="">
                         {% endif %}
                     {% endfor %}
+                    <a href="{% url 'add_food:add_product' %}?ean={{ product.ean_code }}" class="rate-icon-link">
+                        <img src="{% static 'accounts/icons/edit_icon.svg' %}" alt="Редактировать" class="rate-icon">
+                    </a>
                 {% endif %}
                 {% endwith %}
             </div>

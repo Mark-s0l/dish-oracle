@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -66,9 +67,6 @@ class TasteTag(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-
-    def get_absolute_url(self):
-        return reverse("taste_tag_sort", kwargs={"slug": self.slug})
 
 
 class Category(models.Model):
@@ -170,7 +168,6 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.company.name})"
 
-
 class ProductRating(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="ratings"
@@ -185,9 +182,7 @@ class ProductRating(models.Model):
         verbose_name="Комментарий",
         help_text="Комментарий к рейтингу продукта",
     )
-
-    # NOTE: This model is designed to link to a user model in future via FK.
-    # The field will be added once `user_data` app is implemented.
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     taste_tags = models.ManyToManyField(TasteTag, related_name="ratings")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -198,6 +193,12 @@ class ProductRating(models.Model):
         verbose_name_plural = "Рейтинги продуктов"
         indexes = [
             models.Index(fields=["rate", "updated_at", "created_at"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "product"],
+                name="unique_user_product_rating"
+            )
         ]
 
     def __str__(self):

@@ -65,7 +65,8 @@ def taste_tag(db, category):
 
 class TestRateProductViewGet:
 
-    def test_get_pk_in_session(self, client, product_with_session):
+    def test_get_pk_in_session(self, client, user, product_with_session):
+        client.force_login(user=user)
         response = client.get(
             reverse("rate_food:add_rate"), headers={"HX-Request": "true"}
         )
@@ -75,7 +76,8 @@ class TestRateProductViewGet:
         assert isinstance(response.context["rate_form"], RatingForm)
         assert client.session.get("current_product_id") == product_with_session.pk
 
-    def test_get_pk_not_in_session(self, client, db):
+    def test_get_pk_not_in_session(self, client, user, db):
+        client.force_login(user=user)
         expected_url = reverse("add_food:add_product")
         response = client.get(
             reverse("rate_food:add_rate"), headers={"HX-Request": "true"}
@@ -85,7 +87,10 @@ class TestRateProductViewGet:
         assert len(response.templates) == 0
         assert "current_product_id" not in client.session
 
-    def test_get_pk_in_session_load_main_template(self, client, product_with_session):
+    def test_get_pk_in_session_load_main_template(
+        self, client, user, product_with_session
+    ):
+        client.force_login(user=user)
         response = client.get(reverse("rate_food:add_rate"))
         assert response.status_code == 200
         assert response.templates[0].name == "rate_food/add_rating.html"
@@ -93,7 +98,8 @@ class TestRateProductViewGet:
         assert isinstance(response.context["rate_form"], RatingForm)
         assert client.session.get("current_product_id") == product_with_session.pk
 
-    def test_get_pk_not_in_session_no_htmx(self, client, db):
+    def test_get_pk_not_in_session_no_htmx(self, client, user, db):
+        client.force_login(user=user)
         response = client.get(reverse("rate_food:add_rate"))
         assert response.status_code == 302
         assert response.headers.get("Location") == reverse("add_food:add_product")
@@ -101,7 +107,10 @@ class TestRateProductViewGet:
 
 class TestRateProductViewPost:
 
-    def test_get_pk_in_session_post(self, client, product_with_session, taste_tag):
+    def test_get_pk_in_session_post(
+        self, client, user, product_with_session, taste_tag
+    ):
+        client.force_login(user=user)
         response = client.post(reverse("rate_food:add_rate"), {"rate": 3})
         assert response.status_code == 200
         assert client.session.get("current_product_id") == product_with_session.pk
@@ -112,14 +121,16 @@ class TestRateProductViewPost:
         tags_form = response.context["tags_form"]
         assert taste_tag in tags_form.fields["taste_tags"].queryset
 
-    def test_invalid_rate_form(self, client, product_with_session):
+    def test_invalid_rate_form(self, client, user, product_with_session):
+        client.force_login(user=user)
         response = client.post(reverse("rate_food:add_rate"), {"rate": "invalid"})
         assert response.status_code == 200
         assert isinstance(response.context["rate_form"], RatingForm)
         assert response.context["product"] == product_with_session
         assert response.templates[0].name == "rate_food/partials/rate_selector.html"
 
-    def test_pk_not_in_session(self, db, client):
+    def test_pk_not_in_session(self, db, user, client):
+        client.force_login(user=user)
         response = client.post(reverse("rate_food:add_rate"), {"rate": "5"})
         expected_url = reverse("add_food:add_product")
         assert response.status_code == 302
@@ -127,7 +138,8 @@ class TestRateProductViewPost:
         assert len(response.templates) == 0
         assert "current_product_id" not in client.session
 
-    def test_empty_taste_tag(self, client, product_with_session):
+    def test_empty_taste_tag(self, client, user, product_with_session):
+        client.force_login(user=user)
         response = client.post(reverse("rate_food:add_rate"), {"rate": 3})
         assert response.status_code == 200
         assert client.session.get("current_product_id") == product_with_session.pk
@@ -138,7 +150,8 @@ class TestRateProductViewPost:
         tags_form = response.context["tags_form"]
         assert not tags_form.fields["taste_tags"].queryset.exists()
 
-    def test_post_pk_not_in_session_htmx(self, client, db):
+    def test_post_pk_not_in_session_htmx(self, client, user, db):
+        client.force_login(user=user)
         response = client.post(
             reverse("rate_food:add_rate"), {"rate": "5"}, headers={"HX-Request": "true"}
         )
@@ -148,7 +161,8 @@ class TestRateProductViewPost:
 
 class TestSaveRatingView:
 
-    def test_valid_work_view(self, client, product_with_session, taste_tag):
+    def test_valid_work_view(self, client, user, product_with_session, taste_tag):
+        client.force_login(user=user)
         session = client.session
         session["rate"] = 5
         session["tag_ids"] = [taste_tag.pk]
@@ -165,7 +179,8 @@ class TestSaveRatingView:
         assert client.session.get("rate") is None
         assert client.session.get("tag_ids") is None
 
-    def test_pk_is_not_in_session(self, client, db, taste_tag):
+    def test_pk_is_not_in_session(self, client, user, db, taste_tag):
+        client.force_login(user=user)
         session = client.session
         session["rate"] = 5
         session["tag_ids"] = [taste_tag.pk]
@@ -181,7 +196,10 @@ class TestSaveRatingView:
         assert "rate" in session
         assert "tag_ids" in session
 
-    def test_rate_not_in_session(self, client, db, taste_tag, product_with_session):
+    def test_rate_not_in_session(
+        self, client, db, user, taste_tag, product_with_session
+    ):
+        client.force_login(user=user)
         session = client.session
         session["tag_ids"] = [taste_tag.pk]
         session["current_product_id"] = product_with_session.pk
@@ -197,7 +215,8 @@ class TestSaveRatingView:
         assert "rate" not in session
         assert "tag_ids" in session
 
-    def test_tags_form_invalid(self, client, db, product_with_session, taste_tag):
+    def test_tags_form_invalid(self, client, db, user, product_with_session, taste_tag):
+        client.force_login(user=user)
         session = client.session
         session["rate"] = 5
         session["tag_ids"] = [taste_tag.pk]

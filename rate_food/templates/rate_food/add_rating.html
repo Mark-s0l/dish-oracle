@@ -21,4 +21,5 @@
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'rate_food/js/rate_selector.js' %}"></script>
+<a href="{% url 'add_food:add_product' %}" class="incorrect_product">Это не мой товар</a>
 {% endblock %}

@@ -11,6 +11,8 @@ from food_hub.models import Product, ProductRating, TasteTag
 from rate_food.forms import RatingForm, TasteTagForm
 from rate_food.tags_choose import choose_taste_tags
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 logger = logging.getLogger("rate_food")
 
 
@@ -38,7 +40,7 @@ def is_htmx(request) -> bool:
     return request.headers.get("HX-Request") == "true"
 
 
-class RateProductView(View):
+class RateProductView(LoginRequiredMixin, View):
     template_name = "rate_food/add_rating.html"
 
     def get(self, request):
@@ -103,7 +105,7 @@ class RateProductView(View):
         )
 
 
-class SaveRatingView(View):
+class SaveRatingView(LoginRequiredMixin, View):
     def post(self, request):
         logger.info("[S3] User on Stage 3")
         rate = request.session.get("rate")
@@ -127,7 +129,9 @@ class SaveRatingView(View):
         tags = tags_form.cleaned_data["taste_tags"]
 
         with transaction.atomic():
-            rating_obj = ProductRating.objects.create(product=product, rate=rate)
+            rating_obj, created = ProductRating.objects.update_or_create(
+                product=product, user=self.request.user, defaults={"rate": rate}
+            )
             rating_obj.taste_tags.set(tags)
         logger.info("[DB] Add new rate for product")
 
@@ -137,4 +141,4 @@ class SaveRatingView(View):
 
         # Regular redirect here — HTMX is not involved at this stage,
         # full page reload is expected
-        return redirect("food_hub:product_list")
+        return redirect("food_hub:home")

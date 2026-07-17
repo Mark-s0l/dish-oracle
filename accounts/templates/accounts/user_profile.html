@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Профиль {% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/user_profile.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/user_profile.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+
+  <form action="{% url 'accounts:logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn" title="Выйти">
+      <img src="{% static 'accounts/icons/exit_icon.svg' %}" alt="Выйти">
+    </button>
+  </form>
+
+<div class="user-info">
+    <img class="avatar" src="{{ object.get_avatar }}" alt="Фото профиля">
+    <span class="username">{{ object.username }}</span>
+</div>
+
+  <div class="email-section">
+    <p class="email-label">e-mail:</p>
+
+    <form method="post" id="email-form">
+      {% csrf_token %}
+
+      <div class="email-form">
+        {{ form.email }}
+        <button type="button" class="edit-btn" id="edit-btn" title="Редактировать e-mail">
+          <img src="{% static 'accounts/icons/edit_icon.svg' %}" alt="Редактировать">
+        </button>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">Сменить email</button>
+    </form>
+
+    {% for error in form.email.errors %}
+      <div class="email-form-error">{{ error }}</div>
+    {% endfor %}
+  </div>
+  <a href="{% url 'accounts:change_password' %}" class="submit-btn is-visible">
+  Сменить пароль
+  </a>
+</div>
+{% endblock %}

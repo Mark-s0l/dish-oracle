@@ -13,6 +13,11 @@
           rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="{% static 'icon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'icons/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'icons/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'icons/site.webmanifest' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -23,8 +28,8 @@
 <div class="fixed-footer">
   <ul>
     <li>
-      <a href="{% url 'food_hub:product_list' %}"
-         class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
+      <a href="{% url 'food_hub:home' %}"
+         class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
         <img src="{% static 'icons/home-page-icon.svg' %}" alt="">
       </a>
     </li>
@@ -44,7 +49,7 @@
     </li>
 
     <li>
-      <a href="#"
+      <a href="{% url 'accounts:profile' %}"
          class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
         <img src="{% static 'icons/profile-page-icon.svg' %}" alt="">
       </a>

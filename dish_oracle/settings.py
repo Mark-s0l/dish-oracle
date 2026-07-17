@@ -34,6 +34,15 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 EAN_DB_API_URL = env("EAN_DB_API_URL")
 EAN_DB_JWT = env("EAN_DB_JWT")
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailBackend',              
+]
+
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -49,6 +58,7 @@ INSTALLED_APPS = [
     "rate_food",
     "django.contrib.postgres",
     "django_htmx",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -96,6 +106,29 @@ DATABASES = {
     }
 }
 
+# Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env('REDIS_URL'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# E-Mail
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env.int('EMAIL_PORT')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -177,6 +210,14 @@ LOGGING = {
             "backupCount": 3,
             "formatter": "main_formatters",
         },
+        "accounts_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "accounts.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "main_formatters",
+        },
     },
     "loggers": {
         "django": {
@@ -193,16 +234,14 @@ LOGGING = {
             "handlers" : ["rate_food_file"],
             "level" : "INFO",
             "propagate" : False,
-        }
+        },
+        "accounts" : {
+            "handlers" : ["accounts_file"],
+            "level" : "INFO",
+            "propagate" : False,
+        },
     },
 }
-
-# ONLY FOR DEV SERVER - REPLACE IN PROD
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.ngrok-free.dev",
-    "https://*.ngrok.app",
-    "https://*.ngrok.io",
-]   
 
 MESSAGE_TAGS = {
     messages.DEBUG:    'secondary',
@@ -211,3 +250,12 @@ MESSAGE_TAGS = {
     messages.WARNING:  'warning',
     messages.ERROR:    'danger',
 }
+
+# Celery
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://127.0.0.1:6379/1')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_SOFT_TIME_LIMIT = 30
+CELERY_TASK_TIME_LIMIT = 60
