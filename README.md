@@ -112,18 +112,49 @@ Get your JWT token by registering at [ean-db.com](https://ean-db.com).
 
 ---
 
-## 🧪 Running Tests
+## 🛠️ Development
 
-To run the full test suite:
+  
+
+Install development dependencies first (if not already installed):
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+  
+
+### Running tests
+
 ```bash
 pytest
 ```
 
-Or to run tests for a specific app:
+Or for a specific app:
+
 ```bash
 pytest [app_name]
 ```
 
+  
+
+With coverage report:
+
+```bash
+pytest --cov
+```
+
+  
+
+### Linting and formatting
+
+```bash
+black .
+
+isort .
+
+flake8
+```
 ---
 
 ## 🌍 Deployment
