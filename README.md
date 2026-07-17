@@ -2,6 +2,12 @@
 
 A Django-based web app to organize and rate grocery products by personal taste tags, with personalized recommendations coming in future updates.
 
+---
+
+## ✨ Highlights
+
+- **99% test coverage** (3217 statements, only 48 uncovered) — core business logic is covered by automated tests using `pytest` and `pytest-django`.
+- **Modular architecture** — each feature lives in its own Django app (`food_hub`, `search_hub`, `add_food`, `rate_food`, `accounts`), making it straightforward to extend with new functionality without touching unrelated code.
 
 ---
 ## 📱 Screenshots
@@ -32,6 +38,7 @@ A Django-based web app to organize and rate grocery products by personal taste t
 <td><img src=".github/screenshots/home-page.png" width="200"></td>
 </tr>
 </table>
+
 ---
 
 ## 🚀 Getting Started
