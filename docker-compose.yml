@@ -1,7 +1,8 @@
-version: '3.9'
-
 services:
   db:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: postgres-ru #custom PostgreSQL image with Russian locale
     environment:
       POSTGRES_DB: ${DB_NAME}
