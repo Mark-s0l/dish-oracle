@@ -15,18 +15,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
-from django.urls import include, path
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path, reverse_lazy
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path("", RedirectView.as_view(url=reverse_lazy("accounts:login")), name="main_page"),
     path("admin/", admin.site.urls),
-    path('home/', include('food_hub.urls', namespace='food_hub')),
-    path('search/', include('search_hub.urls', namespace='search_hub')),
-    path('add/', include('add_food.urls', namespace='add_food')),
-    path('rate/', include('rate_food.urls', namespace='rate_food')),
-    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path("home/", include("food_hub.urls", namespace="food_hub")),
+    path("search/", include("search_hub.urls", namespace="search_hub")),
+    path("add/", include("add_food.urls", namespace="add_food")),
+    path("rate/", include("rate_food.urls", namespace="rate_food")),
+    path("accounts/", include("accounts.urls", namespace="accounts")),
 ]
 
 # For development: serving media files via Django
