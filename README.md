@@ -2,6 +2,18 @@
 
 A Django-based web app to organize and rate grocery products by personal taste tags, with personalized recommendations coming in future updates.
 
+
+---
+## 📱 Screenshots
+
+| Login | Registration | Profile | Add product |
+|:---:|:---:|:---:|:---:|
+| <img src=".github/screenshots/login-page.png" width="200"/> | <img src=".github/screenshots/sign-up-page.png" width="200"/> | <img src=".github/screenshots/profile-user-page.png" width="200"/> | <img src=".github/screenshots/add-food-page.png" width="200"/> |
+
+| Taste tags | Rate product | Search & filters | Catalog |
+|:---:|:---:|:---:|:---:|
+| <img src=".github/screenshots/rate-add-tag-page.png" width="200"/> | <img src=".github/screenshots/rate-food-page.png" width="200"/> | <img src=".github/screenshots/search-page.png" width="200"/> | <img src=".github/screenshots/home-page.png" width="200"/> |
+
 ---
 
 ## 🚀 Getting Started
