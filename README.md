@@ -14,6 +14,8 @@ See **Deployment** for running in production.
 ## 🧰 Prerequisites
 You'll need:
 - Python 3.11+
+  > On Linux/macOS the command may be `python3` instead of `python`,
+  > depending on your system setup.
 - pip
 - Git
 - Virtualenv *(optional but recommended)*
@@ -34,6 +36,8 @@ cd dish-oracle
 ### 2. Create and activate virtual environment
 ```bash
 python -m venv venv
+# or, if `python` is not found:
+python3 -m venv venv
 source venv/bin/activate   # Linux/macOS
 venv\Scripts\activate      # Windows
 ```
@@ -49,13 +53,22 @@ cp .env.example .env
 ```
 Then open `.env` and set your own `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, etc.
 
-### 5. Setup and run Docker
-```bash
-docker-compose up -d
-```
-This will start a **PostgreSQL** container configured via your `.env`.
+### 5. Build and start Docker containers
 
-### 6. Apply migrations and run server
+This project uses a custom PostgreSQL image with Russian locale (`ru_RU.UTF-8`)
+support, built automatically from the `Dockerfile` in the repository root.
+
+```bash
+docker compose up -d --build
+```
+
+This will start the **PostgreSQL** and **Redis** containers configured via your `.env`.
+
+> `--build` ensures the image is rebuilt if the Dockerfile changes.
+> For routine restarts without Dockerfile changes, plain `docker compose up -d` is enough.
+
+### 6. Apply migrations and run the server
+
 ```bash
 python manage.py migrate
 python manage.py runserver
@@ -64,6 +77,12 @@ python manage.py runserver
 The app should now be available at:  
 👉 http://127.0.0.1:8000
 
+In a separate terminal, start the Celery worker (also required, uses the same venv):
+
+```bash
+source venv/bin/activate
+celery -A dish_oracle worker -l info
+```
 ---
 
 ## 🧩 Using the App
