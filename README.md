@@ -6,14 +6,32 @@ A Django-based web app to organize and rate grocery products by personal taste t
 ---
 ## 📱 Screenshots
 
-| Login | Registration | Profile | Add product |
-|:---:|:---:|:---:|:---:|
-| <img src=".github/screenshots/login-page.png" width="200"/> | <img src=".github/screenshots/sign-up-page.png" width="200"/> | <img src=".github/screenshots/profile-user-page.png" width="200"/> | <img src=".github/screenshots/add-food-page.png" width="200"/> |
-
-| Taste tags | Rate product | Search & filters | Catalog |
-|:---:|:---:|:---:|:---:|
-| <img src=".github/screenshots/rate-add-tag-page.png" width="200"/> | <img src=".github/screenshots/rate-food-page.png" width="200"/> | <img src=".github/screenshots/search-page.png" width="200"/> | <img src=".github/screenshots/home-page.png" width="200"/> |
-
+<table>
+<tr>
+<td align="center"><b>Login</b></td>
+<td align="center"><b>Registration</b></td>
+<td align="center"><b>Profile</b></td>
+<td align="center"><b>Add product</b></td>
+</tr>
+<tr>
+<td><img src=".github/screenshots/login-page.png" width="200"></td>
+<td><img src=".github/screenshots/sign-up-page.png" width="200"></td>
+<td><img src=".github/screenshots/profile-user-page.png" width="200"></td>
+<td><img src=".github/screenshots/add-food-page.png" width="200"></td>
+</tr>
+<tr>
+<td align="center"><b>Taste tags</b></td>
+<td align="center"><b>Rate product</b></td>
+<td align="center"><b>Search &amp; filters</b></td>
+<td align="center"><b>Catalog</b></td>
+</tr>
+<tr>
+<td><img src=".github/screenshots/rate-add-tag-page.png" width="200"></td>
+<td><img src=".github/screenshots/rate-food-page.png" width="200"></td>
+<td><img src=".github/screenshots/search-page.png" width="200"></td>
+<td><img src=".github/screenshots/home-page.png" width="200"></td>
+</tr>
+</table>
 ---
 
 ## 🚀 Getting Started
