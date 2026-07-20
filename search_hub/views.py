@@ -1,13 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import (SearchQuery, SearchRank,
                                             SearchVector)
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.views.generic import ListView
 
-from food_hub.models import Product
+from food_hub.models import Product, ProductRating
 from search_hub.forms import SearchForm, TagSelectorForm
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class ProductSearchView(LoginRequiredMixin, ListView):
@@ -20,15 +19,25 @@ class ProductSearchView(LoginRequiredMixin, ListView):
         # ArrayAgg собирает значения из нескольких строк в один массив
         # distunct=True - убираем дубликаты
         qs = (
-            Product.objects.select_related("company", "category")
-            .prefetch_related("ratings__taste_tags")
+            Product.objects.filter(ratings__user=self.request.user)
+            .distinct()
+            .select_related("company", "category")
+            .prefetch_related(
+                Prefetch(
+                    "ratings",
+                    queryset=ProductRating.objects.filter(
+                        user=self.request.user
+                    ).prefetch_related("taste_tags"),
+                    to_attr="user_ratings",
+                )
+            )
             .annotate(tag_names=ArrayAgg("ratings__taste_tags__name", distinct=True))
         )
         get_data = self.request.GET.copy()
         if get_data.get("action") == "clear":
             get_data.pop("tags", None)
 
-        tag_form = TagSelectorForm(get_data)
+        tag_form = TagSelectorForm(get_data, user=self.request.user)
         self._tag_form_for_context = tag_form
 
         tag_ids = []
@@ -38,7 +47,7 @@ class ProductSearchView(LoginRequiredMixin, ListView):
             if tag_ids:
                 qs = qs.annotate(
                     tag_ids=ArrayAgg("ratings__taste_tags__id", distinct=True)
-                    )
+                )
                 qs = qs.filter(tag_ids__contains=tag_ids)
 
         # Поисковая форма
@@ -49,8 +58,9 @@ class ProductSearchView(LoginRequiredMixin, ListView):
         query = (self.searchform.cleaned_data.get("query") or "").strip()
         if not query:
             if tag_ids:
-                return qs.distinct()
-            return qs.none()
+                return qs
+            else:
+                return qs.none()
         # Префикс поиск
         prefix_qs = qs.filter(
             Q(name__istartswith=query)
@@ -88,6 +98,6 @@ class ProductSearchView(LoginRequiredMixin, ListView):
         context["form"] = self.searchform
         context["tag_selector"] = getattr(
             self, "_tag_form_for_context", TagSelectorForm(self.request.GET)
-            )
+        )
         context["query"] = self.request.GET.get("query", "")
         return context
