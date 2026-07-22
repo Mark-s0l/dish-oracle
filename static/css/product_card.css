@@ -83,3 +83,14 @@
     width: 20px;
     height: 20px;
 }
+
+.rate-icon-link {
+    display: inline-block;
+    line-height: 0;
+}
+
+.rate-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}

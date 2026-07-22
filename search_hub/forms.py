@@ -23,6 +23,7 @@ class TagSelectorForm(forms.Form):
         label="Теги",
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["tags"].queryset = TasteTag.objects.order_by("name")
+        if user is not None:
+            self.fields["tags"].queryset = TasteTag.objects.filter(ratings__user=user).distinct().order_by("name")

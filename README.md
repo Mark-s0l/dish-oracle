@@ -1,5 +1,7 @@
 # Dish Oracle 🍽️
 
+![version](https://img.shields.io/github/v/tag/Mark-s0l/dish-oracle) [![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm--Noncommercial--1.0.0-blue)](https://polyformproject.org/licenses/noncommercial/1.0.0)
+
 A Django-based web app to organize and rate grocery products by personal taste tags, with personalized recommendations coming in future updates.
 
 ---
@@ -246,7 +248,7 @@ For major changes, open an issue first to discuss what you’d like to modify.
 ## 🔖 Versioning
 
 This project follows [SemVer](https://semver.org/).  
-Current release: `v1.0.0`
+See [Releases](https://github.com/Mark-s0l/dish-oracle/releases) for version history.
 
 ---
 
