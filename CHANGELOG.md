@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-22
+### Fixed
+- Product search no longer returns products the current user has not rated themselves, even if another user's rating matches the search query or tag filter.
+
+### Changed
+- Tag selector in search now only shows taste tags the current user has applied in their own ratings, instead of all tags in the system.
+
 ### Planned
 - Recommendation system based on user ratings and tags.
 
