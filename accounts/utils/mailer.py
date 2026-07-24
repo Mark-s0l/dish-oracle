@@ -75,9 +75,10 @@ class Mailer:
             raise MailerAuthError("Invalid authorization data") from exc
 
         if isinstance(exc, SMTPConnectError):
-            logger.error(f"[MAILER] Couldn't connect host={
-                settings.EMAIL_HOST} port={settings.EMAIL_PORT
-                }", exc_info=True)
+            logger.error(
+                f"[MAILER] Couldn't connect host={settings.EMAIL_HOST} "
+                f"port={settings.EMAIL_PORT}",
+                exc_info=True)
             raise MailerConnectionError("Couldn't connect to SMTP") from exc
 
         if isinstance(exc, SMTPException):

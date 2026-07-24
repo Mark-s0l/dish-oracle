@@ -98,9 +98,8 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
             messages.error(self.request, "Ошибка отправки письма. Попробуйте позже")
             return redirect("accounts:profile")
 
-        logger.info(f"[CHANGE_PASSWD] User={
-                self.request.user.id
-                } started the password change procedure")
+        logger.info(
+            f"[CHANGE_PASSWD] User={self.request.user.id} started the password change procedure")
 
         return super().form_valid(form)
 
