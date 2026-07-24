@@ -2,7 +2,6 @@ import logging
 
 from celery import shared_task
 from celery.exceptions import MaxRetriesExceededError, SoftTimeLimitExceeded
-from celery.utils.log import get_task_logger
 
 from accounts.utils.mailer import Mailer, MailerError
 
@@ -28,11 +27,13 @@ def send_email_task(self, subject, message, recipient_list, log_context=""):
             raise self.retry(exc=exc)
         except MaxRetriesExceededError:
             logger.error(
-                f"[{log_context}]: Attempts to send an email message have been exhausted; recipients={recipient_list}",
+                f"[{log_context}]: Attempts to send an email message have been "
+                f"exhausted; recipients={recipient_list}",
                 exc_info=True,
             )
     except SoftTimeLimitExceeded:
         logger.error(
-            f"[{log_context}]: Task timed out (30s+), not retrying; recipients={recipient_list}",
+            f"[{log_context}]: Task timed out (30s+), "
+            f"not retrying; recipients={recipient_list}",
             exc_info=True,
         )

@@ -2,11 +2,15 @@ from smtplib import SMTPAuthenticationError, SMTPConnectError, SMTPException
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django.conf import settings
 from django.core.mail.backends.smtp import EmailBackend
 
-from django.conf import settings
-from accounts.utils.mailer import (Mailer, MailerAuthError,
-                                   MailerConnectionError, MailerError)
+from accounts.utils.mailer import (
+    Mailer,
+    MailerAuthError,
+    MailerConnectionError,
+    MailerError,
+)
 
 
 class TestCheckConnection:
@@ -88,9 +92,8 @@ class TestHandleError:
             (SMTPConnectError(421, "Connection failed"), MailerConnectionError),
             (SMTPException("SMTP error"), MailerError),
             (Exception("Unexpected"), MailerError),
-            ],
+        ],
     )
     def test_exception_handle_error(self, input_exc, excepted_exc):
         with pytest.raises(excepted_exc):
             Mailer._handle_error(input_exc)
-

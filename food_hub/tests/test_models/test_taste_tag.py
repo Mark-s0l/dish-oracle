@@ -105,5 +105,3 @@ class TestTasteTag:
         assert tag1 in negative_queryset
         assert tag2 in negative_queryset
         assert tag3 not in negative_queryset
-
-

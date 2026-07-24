@@ -1,18 +1,22 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 import food_hub.models as models
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 @pytest.fixture()
 def user2(django_db_blocker):
     with django_db_blocker.unblock():
-        user = User.objects.create_user(username="testuser2", email="user2_email@inbox.com", password="testpass")
+        user = User.objects.create_user(
+            username="testuser2", email="user2_email@inbox.com", password="testpass"
+        )
     yield user
     with django_db_blocker.unblock():
         user.delete()
+
 
 @pytest.fixture
 def country(db):
@@ -36,22 +40,28 @@ def make_product(db, category):
 
     return _make
 
+
 @pytest.fixture
 def make_taste_tag(db, category):
     def _make(name, taste_type, slug):
         return models.TasteTag.objects.create(
-            name=name, taste_type=taste_type, slug=slug)
-    
+            name=name, taste_type=taste_type, slug=slug
+        )
+
     return _make
+
 
 @pytest.fixture
 def make_rate(db):
     def _make(product, rate, tags, user):
-        rating = models.ProductRating.objects.create(product=product, rate=rate, user=user)
+        rating = models.ProductRating.objects.create(
+            product=product, rate=rate, user=user
+        )
         rating.taste_tags.set(tags)
         return rating
 
     return _make
+
 
 @pytest.fixture
 def category(db):
@@ -60,7 +70,17 @@ def category(db):
 
 
 @pytest.fixture
-def setup_products(db, client, make_company, make_taste_tag, make_product, make_rate, category, country, user):
+def setup_products(
+    db,
+    client,
+    make_company,
+    make_taste_tag,
+    make_product,
+    make_rate,
+    category,
+    country,
+    user,
+):
     client.force_login(user=user)
     c1 = make_company("Завод мороженого")
     c2 = make_company("Вафельный комбинат")
@@ -74,9 +94,9 @@ def setup_products(db, client, make_company, make_taste_tag, make_product, make_
     t2 = make_taste_tag("Солёный", "P", "soleniy")
     t3 = make_taste_tag("Горький", "N", "gorkiy")
 
-    r1 = make_rate(p1, 5, [t1], user)
-    r2 = make_rate(p2, 4, [t2], user)
-    r3 = make_rate(p3, 2, [t3], user)
+    make_rate(p1, 5, [t1], user)
+    make_rate(p2, 4, [t2], user)
+    make_rate(p3, 2, [t3], user)
     return [p1, p2, p3]
 
 
@@ -279,8 +299,11 @@ def test_clear_action_removes_tags_and_shows_query_results(
     names2 = list(resp2.context["products"].values_list("name", flat=True))
     assert set(names2) == {"Prod OK", "Prod BAD"}
 
+
 @pytest.mark.django_db
-def test_different_user_search(client, make_company, make_product, make_rate, user, user2):
+def test_different_user_search(
+    client, make_company, make_product, make_rate, user, user2
+):
 
     c1 = make_company("Вафельный комбинат")
     c2 = make_company("Цех Кремлбрюле")
@@ -291,7 +314,7 @@ def test_different_user_search(client, make_company, make_product, make_rate, us
     t1 = models.TasteTag.objects.create(name="t1", slug="t1", taste_type="P")
     t2 = models.TasteTag.objects.create(name="t2", slug="t2", taste_type="P")
 
-    r1 = make_rate(p1, 5, [t1], user)
+    make_rate(p1, 5, [t1], user)
     r2 = models.ProductRating.objects.create(product=p2, rate=3, user=user2)
     r2.taste_tags.add(t2)
 
@@ -302,19 +325,22 @@ def test_different_user_search(client, make_company, make_product, make_rate, us
     found = list(response.context["products"].values_list("name", flat=True))
     assert found == [p1.name]
 
+
 @pytest.mark.django_db
-def test_different_user_search_without_rating(client, make_company, make_product, make_rate, user):
+def test_different_user_search_without_rating(
+    client, make_company, make_product, make_rate, user
+):
 
     c1 = make_company("Вафельный комбинат")
     c2 = make_company("Цех Кремлбрюле")
 
     p1 = make_product(c1, "Мороженое Сливочное Яшкино 20% 70г", "4006381333931")
-    p2 = make_product(c2, "Сливочные вафли Яшкино 200г", "4607145590012")
+    make_product(c2, "Сливочные вафли Яшкино 200г", "4607145590012")
 
     t1 = models.TasteTag.objects.create(name="t1", slug="t1", taste_type="P")
-    t2 = models.TasteTag.objects.create(name="t2", slug="t2", taste_type="P")
+    models.TasteTag.objects.create(name="t2", slug="t2", taste_type="P")
 
-    r1 = make_rate(p1, 5, [t1], user)
+    make_rate(p1, 5, [t1], user)
 
     client.force_login(user=user)
     url = reverse("search_hub:product_search")
@@ -322,6 +348,7 @@ def test_different_user_search_without_rating(client, make_company, make_product
 
     found = list(response.context["products"].values_list("name", flat=True))
     assert found == [p1.name]
+
 
 @pytest.mark.django_db
 def test_tag_filter_matching_tag_does_not_leak_other_users_product(

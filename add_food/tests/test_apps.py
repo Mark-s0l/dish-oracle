@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+
 from add_food.apps import AddFoodConfig
 
 

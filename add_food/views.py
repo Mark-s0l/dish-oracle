@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import DatabaseError, IntegrityError, transaction
 from django.shortcuts import redirect, render
 from django.views.generic.edit import FormView
@@ -5,9 +7,6 @@ from django.views.generic.edit import FormView
 from add_food.forms import AddProductForm
 from add_food.services import ApiError, add_product
 from food_hub.models import Category, Company, Country, Product
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
 
 
 class AddProductView(LoginRequiredMixin, FormView):
@@ -42,9 +41,7 @@ class AddProductView(LoginRequiredMixin, FormView):
             try:
                 product = Product.objects.get(ean_code=ean)
             except Product.DoesNotExist:
-                messages.error(
-                    self.request,
-                    "Данного продукта не существует")
+                messages.error(self.request, "Данного продукта не существует")
                 return redirect("food_hub:home")
 
             request.session["current_product_id"] = product.pk

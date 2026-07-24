@@ -1,12 +1,12 @@
 from unittest.mock import patch
+
+from django.contrib.auth import get_user_model
+from django.db import DatabaseError, IntegrityError
 from django.test import TestCase
 from django.urls import reverse
-from django.db import DatabaseError, IntegrityError
-from add_food.forms import AddProductForm
+
 from add_food.services import ApiError
 from food_hub.models import Category, Company, Country, Product
-from django.contrib.auth import get_user_model
-
 
 VALID_EAN = "4006381333931"
 
@@ -42,8 +42,10 @@ class AddProductViewTests(TestCase):
     def setUpTestData(cls):
         cls.url = reverse("add_food:add_product")
         cls.form_data = {"ean_code": VALID_EAN}
-        cls.user = User.objects.create_user(username="testuser", password="testpassword123")
-        
+        cls.user = User.objects.create_user(
+            username="testuser", password="testpassword123"
+        )
+
     def setUp(self):
         self.client.force_login(self.user)
 
@@ -58,7 +60,6 @@ class AddProductViewTests(TestCase):
         product = make_product()
         self.client.post(self.url, self.form_data)
         self.assertEqual(self.client.session["current_product_id"], product.pk)
-
 
     @patch("add_food.views.add_product")
     def test_new_product_created_via_api(self, mock_api):
@@ -79,7 +80,9 @@ class AddProductViewTests(TestCase):
         mock_api.side_effect = ApiError("Продукт не найден в базе")
         response = self.client.post(self.url, self.form_data)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Продукт не найден в базе", response.context["form"].errors["ean_code"])
+        self.assertIn(
+            "Продукт не найден в базе", response.context["form"].errors["ean_code"]
+        )
 
     @patch("add_food.views.AddProductView._get_or_create_product")
     @patch("add_food.views.add_product")
@@ -88,11 +91,13 @@ class AddProductViewTests(TestCase):
         mock_create.side_effect = DatabaseError()
         response = self.client.post(self.url, self.form_data)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Ошибка записи данных", response.context["form"].errors["ean_code"][0])
-
+        self.assertIn(
+            "Ошибка записи данных", response.context["form"].errors["ean_code"][0]
+        )
 
     def test_get_or_create_creates_all_objects(self):
         from add_food.views import AddProductView
+
         product = AddProductView()._get_or_create_product(VALID_EAN, make_api_data())
         self.assertEqual(product.ean_code, VALID_EAN)
         self.assertEqual(product.company.name, "Test Corp")
@@ -101,6 +106,7 @@ class AddProductViewTests(TestCase):
 
     def test_get_or_create_is_idempotent(self):
         from add_food.views import AddProductView
+
         view = AddProductView()
         view._get_or_create_product(VALID_EAN, make_api_data())
         view._get_or_create_product(VALID_EAN, make_api_data())

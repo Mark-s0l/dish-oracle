@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -10,8 +11,6 @@ from django_htmx.http import HttpResponseClientRedirect
 from food_hub.models import Product, ProductRating, TasteTag
 from rate_food.forms import RatingForm, TasteTagForm
 from rate_food.tags_choose import choose_taste_tags
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 logger = logging.getLogger("rate_food")
 

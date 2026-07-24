@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from django.urls import reverse
 
-from food_hub.models import (Category, Company, Country, Product,
-                             ProductRating, TasteTag)
+from food_hub.models import Category, Company, Country, Product, ProductRating, TasteTag
 from rate_food.forms import RatingForm, TasteTagForm
 from rate_food.views import get_product_from_session
 

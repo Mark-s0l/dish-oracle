@@ -1,7 +1,13 @@
 from django import forms
-from accounts.models import CustomUser
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    BaseUserCreationForm,
+    PasswordChangeForm,
+)
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import PasswordChangeForm, BaseUserCreationForm, AuthenticationForm
+
+from accounts.models import CustomUser
+
 
 class ChangeEmailUser(forms.ModelForm):
     def clean_email(self):
@@ -14,11 +20,14 @@ class ChangeEmailUser(forms.ModelForm):
         model = CustomUser
         fields = ["email"]
         widgets = {
-            "email": forms.EmailInput(attrs={
-                "class": "email-input",
-                "placeholder": "example_mail@example.com",
-            })
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "email-input",
+                    "placeholder": "example_mail@example.com",
+                }
+            )
         }
+
 
 class EmailVerificationCode(forms.Form):
     code = forms.CharField(
@@ -32,18 +41,20 @@ class EmailVerificationCode(forms.Form):
         ),
     )
 
+
 class ChangePasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['old_password'].widget.attrs.update({
-            'placeholder': 'Старый пароль'
-        })
-        self.fields['new_password1'].widget.attrs.update({
-            'placeholder': 'Новый пароль'
-        })
-        self.fields['new_password2'].widget.attrs.update({
-            'placeholder': 'Новый пароль ещё раз'
-        })
+        self.fields["old_password"].widget.attrs.update(
+            {"placeholder": "Старый пароль"}
+        )
+        self.fields["new_password1"].widget.attrs.update(
+            {"placeholder": "Новый пароль"}
+        )
+        self.fields["new_password2"].widget.attrs.update(
+            {"placeholder": "Новый пароль ещё раз"}
+        )
+
 
 class SignUpUserForm(BaseUserCreationForm):
     email = forms.EmailField(required=True)
@@ -55,31 +66,44 @@ class SignUpUserForm(BaseUserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["username"].widget.attrs.update({
-            "class": "auth__input",
-            "placeholder": "Логин",
-        })
-        self.fields["email"].widget.attrs.update({
-            "class": "auth__input",
-            "placeholder": "E-mail",
-        })
-        self.fields["password1"].widget.attrs.update({
-            "class": "auth__input",
-            "placeholder": "Пароль",
-        })
-        self.fields["password2"].widget.attrs.update({
-            "class": "auth__input",
-            "placeholder": "Пароль ещё раз",
-        })
+        self.fields["username"].widget.attrs.update(
+            {
+                "class": "auth__input",
+                "placeholder": "Логин",
+            }
+        )
+        self.fields["email"].widget.attrs.update(
+            {
+                "class": "auth__input",
+                "placeholder": "E-mail",
+            }
+        )
+        self.fields["password1"].widget.attrs.update(
+            {
+                "class": "auth__input",
+                "placeholder": "Пароль",
+            }
+        )
+        self.fields["password2"].widget.attrs.update(
+            {
+                "class": "auth__input",
+                "placeholder": "Пароль ещё раз",
+            }
+        )
+
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].widget.attrs.update({
-            "class": "auth__input",
-            "placeholder": "Логин или e-mail",
-        })
-        self.fields["password"].widget.attrs.update({
-            "class": "auth__input",
-            "placeholder": "Пароль",
-        })
+        self.fields["username"].widget.attrs.update(
+            {
+                "class": "auth__input",
+                "placeholder": "Логин или e-mail",
+            }
+        )
+        self.fields["password"].widget.attrs.update(
+            {
+                "class": "auth__input",
+                "placeholder": "Пароль",
+            }
+        )

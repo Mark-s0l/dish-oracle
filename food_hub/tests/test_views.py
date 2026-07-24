@@ -3,21 +3,24 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
 
-from food_hub.models import (Category, Company, Country, Product,
-                             ProductRating)
+from food_hub.models import Category, Company, Country, Product, ProductRating
 
 User = get_user_model()
 
 
 @pytest.fixture
 def user(db):
-    return User.objects.create_user(username="testuser", email="tmail@inbox.com", password="testpass")
+    return User.objects.create_user(
+        username="testuser", email="tmail@inbox.com", password="testpass"
+    )
 
 
 @pytest.fixture
 def make_user(db):
     def _make(username, email):
-        return User.objects.create_user(username=username, email=email, password="testpass")
+        return User.objects.create_user(
+            username=username, email=email, password="testpass"
+        )
 
     return _make
 

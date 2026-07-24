@@ -1,13 +1,13 @@
 import pytest
 
 from add_food.services import (
-    add_product,
     ApiError,
-    ProductNotFoundError,
     IncompleteDataError,
-    ResponseTimeOutError,
+    ProductNotFoundError,
     ResponseConnectionError,
+    ResponseTimeOutError,
     ValueReadingJsonError,
+    add_product,
 )
 
 
@@ -22,9 +22,11 @@ def _product_data(
             "barcode": "4600000000001",
             "titles": titles or {"ru": "Печенье", "en": "Cookie"},
             "manufacturer": {
-                "titles": manufacturer_titles or {"ru": "Кондитер", "en": "Confectioner"},
+                "titles": manufacturer_titles
+                or {"ru": "Кондитер", "en": "Confectioner"},
             },
-            "categories": categories or [{"titles": {"ru": "Сладости", "en": "Sweets"}}],
+            "categories": categories
+            or [{"titles": {"ru": "Сладости", "en": "Sweets"}}],
             "barcodeDetails": {"country": country},
             "images": [],
         }

@@ -1,17 +1,10 @@
 import pytest
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.contrib import admin
+
 from food_hub import admin as food_admin
-from food_hub.models import (
-    Category,
-    Company,
-    Country,
-    Product,
-    ProductRating,
-    TasteTag,
-)
-from django.contrib.auth import get_user_model
+from food_hub.models import Category, Company, Country, Product, ProductRating, TasteTag
 
 
 @pytest.fixture(scope="module")
@@ -88,7 +81,7 @@ def test_admin_product_search_and_filter(admin_client):
     country = Country.objects.create(name="Россия")
     company = Company.objects.create(name="Компания", country=country)
     category = Category.objects.create(name="Десерты")
-    product = Product.objects.create(
+    Product.objects.create(
         company=company,
         category=category,
         name="Мороженое",
@@ -113,7 +106,7 @@ def test_admin_product_search_and_filter(admin_client):
 @pytest.mark.django_db
 def test_admin_company_search_and_filter(admin_client):
     country = Country.objects.create(name="Россия")
-    company = Company.objects.create(name="Компания", country=country)
+    Company.objects.create(name="Компания", country=country)
     url = reverse("admin:food_hub_company_changelist")
     # Поиск по имени
     response = admin_client.get(url, {"q": "Компания"})
@@ -127,7 +120,7 @@ def test_admin_company_search_and_filter(admin_client):
 
 @pytest.mark.django_db
 def test_admin_category_search(admin_client):
-    category = Category.objects.create(name="Десерты")
+    Category.objects.create(name="Десерты")
     url = reverse("admin:food_hub_category_changelist")
     response = admin_client.get(url, {"q": "Десерты"})
     assert response.status_code == 200
@@ -136,7 +129,7 @@ def test_admin_category_search(admin_client):
 
 @pytest.mark.django_db
 def test_admin_country_search(admin_client):
-    country = Country.objects.create(name="Россия")
+    Country.objects.create(name="Россия")
     url = reverse("admin:food_hub_country_changelist")
     response = admin_client.get(url, {"q": "Россия"})
     assert response.status_code == 200
@@ -145,7 +138,7 @@ def test_admin_country_search(admin_client):
 
 @pytest.mark.django_db
 def test_admin_tastetag_search_and_filter(admin_client):
-    tag = TasteTag.objects.create(name="Сладкий", taste_type="P", slug="sladkiy")
+    TasteTag.objects.create(name="Сладкий", taste_type="P", slug="sladkiy")
     url = reverse("admin:food_hub_tastetag_changelist")
     response = admin_client.get(url, {"q": "Сладкий"})
     assert response.status_code == 200
@@ -168,7 +161,7 @@ def test_admin_productrating_search_and_filter(admin_client, user):
         ean_code="9780306406157",
         img_field="test2.jpg",
     )
-    rating = ProductRating.objects.create(
+    ProductRating.objects.create(
         product=product, rate=5, comment="Очень вкусно!", user=user
     )
     url = reverse("admin:food_hub_productrating_changelist")

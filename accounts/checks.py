@@ -1,5 +1,7 @@
 from django.core.checks import Error, register
+
 from accounts.utils.mailer import Mailer, MailerError
+
 
 @register(deploy=True)
 def check_smtp_connection(app_configs, **kwargs):

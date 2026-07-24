@@ -1,6 +1,7 @@
-import requests
 import pytest
-from add_food.services import download_image, ImageDownloadError
+import requests
+
+from add_food.services import ImageDownloadError, download_image
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
 

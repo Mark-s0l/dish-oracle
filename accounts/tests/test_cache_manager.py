@@ -5,9 +5,13 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 from redis.exceptions import RedisError
 from redis.exceptions import TimeoutError as RedisTimeoutError
 
-from accounts.utils.cache_manager import (_MISSING, CacheConnectionError,
-                                          CacheError, CacheManager,
-                                          CacheTimeoutError)
+from accounts.utils.cache_manager import (
+    _MISSING,
+    CacheConnectionError,
+    CacheError,
+    CacheManager,
+    CacheTimeoutError,
+)
 
 
 @pytest.fixture(scope="module")

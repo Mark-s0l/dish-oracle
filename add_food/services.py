@@ -60,9 +60,7 @@ def api_request(ean_code: str) -> dict:
         response = requests.get(f"{url}{ean_code}", headers=headers, timeout=10)
 
         if response.status_code == 404:
-            logger.error(
-                f"[API] Product not found ean={ean_code} error:404"
-            )
+            logger.error(f"[API] Product not found ean={ean_code} error:404")
             raise ProductNotFoundError("Ошибка, товар не был найден")
 
         response.raise_for_status()
@@ -160,7 +158,7 @@ def download_image(image_url: str | None) -> bytes:
         return bytes(data)
 
     except requests.exceptions.RequestException:
-        logger.error(f"[IMAGES] Connection error", exc_info=True)
+        logger.error("[IMAGES] Connection error", exc_info=True)
         raise ImageDownloadError("Unknown connection error")
 
 
@@ -170,7 +168,7 @@ def save_image(data: dict, image_url: str | None) -> str:
 
     default_path = os.path.join("products", "default_image.png")
     if image_url is None:
-        logger.error(f"[IMAGES] Image url is None; Return default image")
+        logger.error("[IMAGES] Image url is None; Return default image")
         return default_path
 
     try:

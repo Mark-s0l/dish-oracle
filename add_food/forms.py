@@ -1,6 +1,6 @@
 from django import forms
 
-from food_hub.models import Product, valid_ean13
+from food_hub.models import valid_ean13
 
 
 class AddProductForm(forms.Form):
