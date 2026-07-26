@@ -1,6 +1,6 @@
 # Dish Oracle 🍽️
 
-![version](https://img.shields.io/github/v/tag/Mark-s0l/dish-oracle) [![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm--Noncommercial--1.0.0-blue)](https://polyformproject.org/licenses/noncommercial/1.0.0)
+![version](https://img.shields.io/github/v/tag/Mark-s0l/dish-oracle) [![Coverage Status](https://coveralls.io/repos/github/Mark-s0l/dish-oracle/badge.svg?branch=main)](https://coveralls.io/github/Mark-s0l/dish-oracle?branch=main) [![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm--Noncommercial--1.0.0-blue)](https://polyformproject.org/licenses/noncommercial/1.0.0)
 
 A Django-based web app to organize and rate grocery products by personal taste tags, with personalized recommendations coming in future updates.
 
@@ -52,7 +52,7 @@ See **Deployment** for running in production.
 
 ## 🧰 Prerequisites
 You'll need:
-- Python 3.11+
+- Python 3.12+
   > On Linux/macOS the command may be `python3` instead of `python`,
   > depending on your system setup.
 - pip
@@ -222,19 +222,37 @@ python manage.py check --deploy
 This runs the project's deployment checks (including required SMTP configuration) and will report errors for any missing settings.
 
 ---
-
 ## 🧱 Built With
 
+### Backend
 - [Django](https://www.djangoproject.com/)
 - [django-environ](https://github.com/joke2k/django-environ)
 - [django-htmx](https://github.com/adamchainz/django-htmx)
 - [django-redis](https://github.com/jazzband/django-redis)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Redis](https://redis.io/)
-- [Docker](https://www.docker.com/)
+- [Celery](https://docs.celeryq.dev/)
+- [psycopg](https://github.com/psycopg/psycopg/)
 - [Requests](https://requests.readthedocs.io/)
 - [Pillow](https://pillow.readthedocs.io/)
 - [python-stdnum](https://github.com/arthurdejong/python-stdnum)
+
+### Infrastructure
+- [PostgreSQL](https://www.postgresql.org/)
+- [Redis](https://redis.io/)
+- [Docker](https://www.docker.com/)
+
+### CI/CD
+- [GitHub Actions](https://github.com/features/actions)
+
+### Development & Testing
+- [pytest](https://docs.pytest.org/)
+- [pytest-django](https://pytest-django.readthedocs.io/)
+- [pytest-mock](https://github.com/pytest-dev/pytest-mock)
+- [pytest-cov](https://github.com/pytest-dev/pytest-cov)
+- [factory_boy](https://factoryboy.readthedocs.io/)
+- [black](https://black.readthedocs.io/)
+- [isort](https://isort.readthedocs.io/en/latest/)
+- [flake8](https://flake8.pycqa.org/)
+- [coverage.py](https://coverage.readthedocs.io/)
 
 ---
 
