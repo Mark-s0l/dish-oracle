@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-26
+
+### Changed
+- Minimum supported Python version raised to 3.12 (previously 3.11).
+- Django upgraded to 6.0 (previously 5.2).
+
+## [1.1.0] - 2026-07-22
+
 ### Added
 - Search results now display the current user's own rating for each product.
 
