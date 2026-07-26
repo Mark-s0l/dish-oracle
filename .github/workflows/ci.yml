@@ -40,7 +40,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "pip"
 
       - run: pip install -r requirements.txt -r requirements-dev.txt
@@ -50,6 +50,11 @@ jobs:
       - run: flake8
 
       - run: pytest --cov --cov-report=term-missing
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
         env:
           DEBUG: "True"
           SECRET_KEY: spicy-secret-key-for-ci
