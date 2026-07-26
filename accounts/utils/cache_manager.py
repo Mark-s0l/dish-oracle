@@ -1,11 +1,10 @@
 import logging
+from typing import Any
 
 from django.core.cache import cache
 from redis.exceptions import ConnectionError as RedisConnectionError
-from redis.exceptions import TimeoutError as RedisTimeoutError
 from redis.exceptions import RedisError
-
-from typing import Any
+from redis.exceptions import TimeoutError as RedisTimeoutError
 
 logger = logging.getLogger("accounts")
 
@@ -33,7 +32,7 @@ class CacheManager:
         return f"user:{self.user_id}:{key}"
 
     def _execute(self, operation, *args, **kwargs):
-        op_name = getattr(operation, '__name__', repr(operation))
+        op_name = getattr(operation, "__name__", repr(operation))
         log_message = f"[CACHE] user_id={self.user_id}; operation={op_name}"
         try:
             return operation(*args, **kwargs)
@@ -68,7 +67,7 @@ class CacheManager:
 
     def cache_set(self, key: str, data: Any, timeout: int) -> bool:
         """Set a value in the cache by key.
-        
+
         The key is namespaced automatically as 'user:{user_id}:{key}'
 
         Args:
@@ -80,7 +79,10 @@ class CacheManager:
             bool: True if the value was stored successfully, False otherwise.
         """
         if timeout <= 0:
-            raise ValueError(f"[CACHE] user_id={self.user_id}; timeout must be postive, timeout={timeout}")
+            raise ValueError(
+                f"[CACHE] user_id={self.user_id}; "
+                f"timeout must be postive, timeout={timeout}"
+            )
         return self._execute(cache.set, self._build_key(key), data, timeout=timeout)
 
     def cache_del(self, key: str) -> bool:
@@ -88,7 +90,7 @@ class CacheManager:
 
         Args:
             key (str): the key to delete the value under.
-        
+
         Returns:
             bool: True if the value was deleted successfully, False otherwise
         """

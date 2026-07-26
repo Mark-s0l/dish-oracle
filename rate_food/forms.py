@@ -1,15 +1,15 @@
 from django import forms
-from food_hub.models import TasteTag, ProductRating
+
+from food_hub.models import TasteTag
+
 
 class RatingForm(forms.Form):
     RATE_CHOICES = [(i, i) for i in range(1, 6)]
 
     rate = forms.TypedChoiceField(
-        choices=RATE_CHOICES,
-        widget=forms.RadioSelect,
-        coerce=int,
-        required=True
+        choices=RATE_CHOICES, widget=forms.RadioSelect, coerce=int, required=True
     )
+
 
 class TasteTagForm(forms.Form):
     taste_tags = forms.ModelMultipleChoiceField(
@@ -18,4 +18,3 @@ class TasteTagForm(forms.Form):
         required=False,
         label="Теги",
     )
-    

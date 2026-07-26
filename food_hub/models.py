@@ -1,10 +1,9 @@
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 from stdnum import ean
-from django.contrib.postgres.indexes import GinIndex
 
 from food_hub.utils.validators import (
     ean13_validator,
@@ -85,7 +84,8 @@ class Category(models.Model):
             GinIndex(
                 name="category_name_trgm_gin",
                 fields=["name"],
-                opclasses=["gin_trgm_ops"]),
+                opclasses=["gin_trgm_ops"],
+            ),
         ]
 
     def __str__(self):
@@ -124,7 +124,8 @@ class Company(models.Model):
             GinIndex(
                 name="company_name_trgm_gin",
                 fields=["name"],
-                opclasses=["gin_trgm_ops"]),
+                opclasses=["gin_trgm_ops"],
+            ),
         ]
 
     def __str__(self):
@@ -156,8 +157,9 @@ class Product(models.Model):
         indexes = [
             GinIndex(
                 name="product_name_trgm_gin",
-                fields=["name"], 
-                opclasses=["gin_trgm_ops"]),
+                fields=["name"],
+                opclasses=["gin_trgm_ops"],
+            ),
         ]
         constraints = [
             models.UniqueConstraint(
@@ -167,6 +169,7 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.company.name})"
+
 
 class ProductRating(models.Model):
     product = models.ForeignKey(
@@ -196,8 +199,7 @@ class ProductRating(models.Model):
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "product"],
-                name="unique_user_product_rating"
+                fields=["user", "product"], name="unique_user_product_rating"
             )
         ]
 

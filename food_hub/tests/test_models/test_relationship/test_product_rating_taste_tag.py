@@ -2,8 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from food_hub.models import (Category, Company, Country, Product,
-                             ProductRating, TasteTag)
+from food_hub.models import Category, Company, Country, Product, ProductRating, TasteTag
 
 
 class TestTasteTagM2MProductRating:

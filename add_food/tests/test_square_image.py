@@ -52,12 +52,13 @@ def test_get_square_image_considers_missing_dimensions_as_equal():
 
     assert get_square_image(data) == "http://example.com/no_dims.jpg"
 
+
 def test_get_square_image_skips_image_without_url():
     data = {
         "product": {
             "barcode": "1234567890123",
             "images": [
-                {"width": 150, "height": 150, "url": None},        # ← пропускается
+                {"width": 150, "height": 150, "url": None},  # ← пропускается
                 {"width": 200, "height": 200, "url": "http://example.com/square.jpg"},
             ],
         }

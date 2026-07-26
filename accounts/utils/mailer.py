@@ -24,10 +24,10 @@ class Mailer:
     @classmethod
     def check_connection(cls) -> bool:
         """Check SMTP connection availability on application startup.
-    
+
         Returns:
             bool: True if connection successful, False if non-SMTP backend.
-        
+
         Raises:
             MailerError: If the connection fails.
         """
@@ -44,15 +44,21 @@ class Mailer:
             logger.warning("[MAILER] Non-SMTP backend, connection check skipped")
             return False
 
-    def send(self, subject: str, recipient_list: list[str], message: str, html_message: str | None = None) -> None:
+    def send(
+        self,
+        subject: str,
+        recipient_list: list[str],
+        message: str,
+        html_message: str | None = None,
+    ) -> None:
         """Send an email message.
-    
+
         Args:
             subject (str): Email subject.
             recipient_list (list): List of recipient email addresses.
             message (str): Plain text message body.
             html_message (str, optional): HTML message body. Defaults to None.
-        
+
         Raises:
             MailerError: If the email could not be sent.
         """
@@ -75,9 +81,11 @@ class Mailer:
             raise MailerAuthError("Invalid authorization data") from exc
 
         if isinstance(exc, SMTPConnectError):
-            logger.error(f"[MAILER] Couldn't connect host={
-                settings.EMAIL_HOST} port={settings.EMAIL_PORT
-                }", exc_info=True)
+            logger.error(
+                f"[MAILER] Couldn't connect host={settings.EMAIL_HOST} "
+                f"port={settings.EMAIL_PORT}",
+                exc_info=True,
+            )
             raise MailerConnectionError("Couldn't connect to SMTP") from exc
 
         if isinstance(exc, SMTPException):

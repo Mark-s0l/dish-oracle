@@ -1,16 +1,15 @@
 import os
 
-from add_food.services import save_image, ImageDownloadError
+from add_food.services import ImageDownloadError, save_image
+
 
 def test_save_image_success(mocker, settings, tmp_path):
     mock_download = mocker.patch(
-        "add_food.services.download_image",
-        return_value=b"fake_image_data"
+        "add_food.services.download_image", return_value=b"fake_image_data"
     )
 
     mock_save = mocker.patch(
-        "add_food.services.default_storage.save",
-        return_value="products/image.jpg"
+        "add_food.services.default_storage.save", return_value="products/image.jpg"
     )
 
     data = {"product": {"barcode": "123"}}
@@ -34,12 +33,11 @@ def test_save_image_success(mocker, settings, tmp_path):
 def test_save_image_download_error(mocker, settings, tmp_path):
     mocker.patch(
         "add_food.services.download_image",
-        side_effect=ImageDownloadError("Failed to download")
+        side_effect=ImageDownloadError("Failed to download"),
     )
 
     mock_save = mocker.patch(
-        "add_food.services.default_storage.save",
-        return_value="products/image.jpg"
+        "add_food.services.default_storage.save", return_value="products/image.jpg"
     )
 
     data = {"product": {"barcode": "123"}}
@@ -51,15 +49,12 @@ def test_save_image_download_error(mocker, settings, tmp_path):
 
     assert result == "products/default_image.png"
 
+
 def test_save_image_url_is_none(mocker, settings, tmp_path):
-    mock_download = mocker.patch(
-        "add_food.services.download_image",
-        return_value=None
-    )
+    mock_download = mocker.patch("add_food.services.download_image", return_value=None)
 
     mock_save = mocker.patch(
-        "add_food.services.default_storage.save",
-        return_value="products/image.jpg"
+        "add_food.services.default_storage.save", return_value="products/image.jpg"
     )
 
     data = {"product": {"barcode": "123"}}
@@ -74,14 +69,10 @@ def test_save_image_url_is_none(mocker, settings, tmp_path):
 
 
 def test_save_image_storage_error(mocker, settings, tmp_path):
-    mocker.patch(
-        "add_food.services.download_image",
-        return_value=b"image_data"
-    )
+    mocker.patch("add_food.services.download_image", return_value=b"image_data")
 
     mocker.patch(
-        "add_food.services.default_storage.save",
-        side_effect=Exception("Disk full")
+        "add_food.services.default_storage.save", side_effect=Exception("Disk full")
     )
 
     data = {"product": {"barcode": "123"}}
@@ -91,13 +82,11 @@ def test_save_image_storage_error(mocker, settings, tmp_path):
 
     assert result == "products/default_image.png"
 
+
 def test_save_image_with_real_storage(mocker, settings, tmp_path):
     settings.MEDIA_ROOT = tmp_path
 
-    mocker.patch(
-        "add_food.services.download_image",
-        return_value=b"fake_png_data"
-    )
+    mocker.patch("add_food.services.download_image", return_value=b"fake_png_data")
 
     data = {"product": {"barcode": "123"}}
     image_url = "http://example.com/image.jpg"

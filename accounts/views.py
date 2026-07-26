@@ -11,8 +11,12 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 from kombu.exceptions import OperationalError
 
-from accounts.forms import (ChangeEmailUser, ChangePasswordForm,
-                            EmailVerificationCode, SignUpUserForm)
+from accounts.forms import (
+    ChangeEmailUser,
+    ChangePasswordForm,
+    EmailVerificationCode,
+    SignUpUserForm,
+)
 from accounts.models import CustomUser
 from accounts.tasks import send_email_task
 from accounts.utils.cache_manager import CacheError, CacheManager
@@ -98,9 +102,10 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
             messages.error(self.request, "Ошибка отправки письма. Попробуйте позже")
             return redirect("accounts:profile")
 
-        logger.info(f"[CHANGE_PASSWD] User={
-                self.request.user.id
-                } started the password change procedure")
+        logger.info(
+            f"[CHANGE_PASSWD] User={self.request.user.id} "
+            "started the password change procedure"
+        )
 
         return super().form_valid(form)
 
@@ -139,7 +144,8 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
 
         if attempt > MAX_ATTEMPTS:
             logger.info(
-                f"[CHANGE_PASSWD] User={self.request.user.id} has exhausted the number of attempts"
+                f"[CHANGE_PASSWD] User={self.request.user.id} "
+                "has exhausted the number of attempts"
             )
             messages.info(self.request, "Слишком много ошибок, попробуйте позже")
 
@@ -168,7 +174,7 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
                     "password_change_attempt", {"attempt": attempt}, timeout=3600
                 )
             except CacheError:
-                logger.error(f"[CHANGE_PASSWD] Cache set error", exc_info=True)
+                logger.error("[CHANGE_PASSWD] Cache set error", exc_info=True)
                 messages.error(self.request, "Произошла ошибка. Попробуйте позже")
                 return redirect("accounts:profile")
 
@@ -186,14 +192,18 @@ class VerificationChangePassword(LoginRequiredMixin, FormView):
 
         send_email_task.delay(
             subject="Успешная смена пароля",
-            message="Пароль на учетной записи успешно изменен. Если это делали не вы, пожалуйста ответьте на это письмо",
+            message=(
+                "Пароль на учетной записи успешно изменен. "
+                "Если это делали не вы, пожалуйста ответьте на это письмо"
+            ),
             recipient_list=[self.request.user.email],
             log_context="[CHANGE_PASSWD]",
         )
 
         messages.success(self.request, "Пароль успешно изменен")
         logger.info(
-            f"[CHANGE_PASSWD] User={self.request.user.id} successfully changed the password"
+            f"[CHANGE_PASSWD] User={self.request.user.id} "
+            "successfully changed the password"
         )
         return super().form_valid(form)
 
@@ -213,13 +223,17 @@ class SignUpUser(FormView):
         try:
             send_email_task.delay(
                 subject="Успешная регистрация",
-                message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
+                message=(
+                    "Вы были успешно зарегистрированы! "
+                    "Если это были не вы, пожалуйста, напишите нам"
+                ),
                 recipient_list=[user.email],
                 log_context="SIGN_UP",
             )
         except OperationalError:
             logger.error(
-                f"[SIGN_UP]: Redis недоступен при постановке задачи; email={user.email}",
+                "[SIGN_UP]: Redis недоступен при постановке задачи;"
+                f"email={user.email}",
                 exc_info=True,
             )
 

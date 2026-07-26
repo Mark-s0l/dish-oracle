@@ -1,9 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Prefetch
 from django.views.generic.base import TemplateView
-from food_hub.models import Product, ProductRating
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Q, Prefetch
 
+from food_hub.models import Product, ProductRating
 
 
 class ProductsView(LoginRequiredMixin, TemplateView):
@@ -11,10 +10,18 @@ class ProductsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        products = Product.objects.select_related('company').prefetch_related(
-            Prefetch('ratings', queryset=ProductRating.objects.filter(
-                user=self.request.user
-                ).prefetch_related('taste_tags'), to_attr='user_ratings')
-            ).filter(ratings__user=self.request.user)
+        products = (
+            Product.objects.select_related("company")
+            .prefetch_related(
+                Prefetch(
+                    "ratings",
+                    queryset=ProductRating.objects.filter(
+                        user=self.request.user
+                    ).prefetch_related("taste_tags"),
+                    to_attr="user_ratings",
+                )
+            )
+            .filter(ratings__user=self.request.user)
+        )
         context["products"] = products
         return context

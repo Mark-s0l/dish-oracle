@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 
 import environ
-
 from django.contrib.messages import constants as messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,14 +33,14 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 EAN_DB_API_URL = env("EAN_DB_API_URL")
 EAN_DB_JWT = env("EAN_DB_JWT")
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'accounts.backends.EmailBackend',              
+    "django.contrib.auth.backends.ModelBackend",
+    "accounts.backends.EmailBackend",
 ]
 
-LOGOUT_REDIRECT_URL = 'accounts:login'
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 # Application definition
 
@@ -108,34 +107,34 @@ DATABASES = {
 
 # Redis
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': env('REDIS_URL'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
     }
 }
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 # E-Mail
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = env.int('EMAIL_PORT')
-EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env.int("EMAIL_PORT")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env("EMAIL_HOST_USER")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa: E501
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -183,7 +182,10 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "main_formatters": {
-            "format": "{levelname} {asctime} {module} {pathname} |[{filename}]| [{funcName}]:{lineno} — {message}",
+            "format": (
+                "{levelname} {asctime} {module} {pathname} "
+                "|[{filename}]| [{funcName}]:{lineno} — {message}"
+            ),
             "style": "{",
         },
     },
@@ -230,32 +232,32 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "rate_food" : {
-            "handlers" : ["rate_food_file"],
-            "level" : "INFO",
-            "propagate" : False,
+        "rate_food": {
+            "handlers": ["rate_food_file"],
+            "level": "INFO",
+            "propagate": False,
         },
-        "accounts" : {
-            "handlers" : ["accounts_file"],
-            "level" : "INFO",
-            "propagate" : False,
+        "accounts": {
+            "handlers": ["accounts_file"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
 
 MESSAGE_TAGS = {
-    messages.DEBUG:    'secondary',
-    messages.INFO:     'info',
-    messages.SUCCESS:  'success',
-    messages.WARNING:  'warning',
-    messages.ERROR:    'danger',
+    messages.DEBUG: "secondary",
+    messages.INFO: "info",
+    messages.SUCCESS: "success",
+    messages.WARNING: "warning",
+    messages.ERROR: "danger",
 }
 
 # Celery
-CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://127.0.0.1:6379/1')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6379/1")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_SOFT_TIME_LIMIT = 30
 CELERY_TASK_TIME_LIMIT = 60

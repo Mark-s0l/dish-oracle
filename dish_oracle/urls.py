@@ -22,7 +22,9 @@ from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path("", RedirectView.as_view(url=reverse_lazy("accounts:login")), name="main_page"),
+    path(
+        "", RedirectView.as_view(url=reverse_lazy("accounts:login")), name="main_page"
+    ),
     path("admin/", admin.site.urls),
     path("home/", include("food_hub.urls", namespace="food_hub")),
     path("search/", include("search_hub.urls", namespace="search_hub")),

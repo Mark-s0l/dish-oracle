@@ -1,5 +1,7 @@
-from add_food.services import get_dict_data, IncompleteDataError, ApiError, pick_lang
 import pytest
+
+from add_food.services import ApiError, IncompleteDataError, get_dict_data, pick_lang
+
 
 class TestGetDictData:
     def test_get_dict_data_full_success(self):
@@ -23,24 +25,19 @@ class TestGetDictData:
             "save_path": "saved/image.jpg",
         }
 
-
     def test_get_dict_data_missing_fields(self):
         data = {"product": {"barcode": "999"}}
         save_path = "saved/image.jpg"
 
         with pytest.raises((IncompleteDataError, ApiError)):
-            result = get_dict_data(data, save_path)
-            
-
+            get_dict_data(data, save_path)
 
     def test_get_dict_data_empty_dict(self):
         data = {None: {None: None}}
         save_path = "saved/image.jpg"
 
         with pytest.raises((IncompleteDataError, ApiError)):
-            result = get_dict_data(data, save_path)
-            
-
+            get_dict_data(data, save_path)
 
     def test_get_dict_data_language_fallback_to_en(self):
         data = {
@@ -62,7 +59,6 @@ class TestGetDictData:
         assert result["country"] == "DE"
         assert result["save_path"] == "saved/image.jpg"
 
-
     def test_get_dict_data_empty_categories(self):
         data = {
             "product": {
@@ -76,32 +72,27 @@ class TestGetDictData:
         save_path = "saved/image.jpg"
 
         with pytest.raises((IncompleteDataError, ApiError)):
-            result = get_dict_data(data, save_path)
+            get_dict_data(data, save_path)
+
 
 class TestPickLang:
     def test_pick_lang_returns_ru(self):
         assert pick_lang({"ru": "Название", "en": "Name"}) == "Название"
 
-
     def test_pick_lang_fallback_to_en(self):
         assert pick_lang({"en": "Name"}) == "Name"
-
 
     def test_pick_lang_fallback_to_first_value(self):
         assert pick_lang({"de": "Name"}) == "Name"
 
-
     def test_pick_lang_empty_ru_fallback_to_en(self):
         assert pick_lang({"ru": "", "en": "Name"}) == "Name"
 
-
     def test_pick_lang_empty_dict(self):
-        assert pick_lang({}) == None
-
+        assert pick_lang({}) is None
 
     def test_pick_lang_none(self):
         assert pick_lang(None) is None
-
 
     def test_pick_lang_all_empty_strings(self):
         assert pick_lang({"ru": "", "en": ""}) == ""

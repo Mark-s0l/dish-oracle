@@ -4,7 +4,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from food_hub.models import Category, Company, Country, Product, ProductRating
 
-class TestProductRatingProduct():
+
+class TestProductRatingProduct:
     @pytest.mark.django_db
     def test_productrating_product_fk_success(self, user, save_and_clean):
         country = Country(name="Россия")
@@ -28,13 +29,11 @@ class TestProductRatingProduct():
         assert rating.product == product
         assert rating.product.name == "Мороженое"
 
-
     @pytest.mark.django_db
     def test_productrating_product_fk_required(self, user, save_and_clean):
         rating = ProductRating(product=None, rate=4, user=user)
         with pytest.raises(ValidationError):
             save_and_clean(rating)
-
 
     @pytest.mark.django_db
     def test_productrating_delete_does_not_delete_product(self, user, save_and_clean):
@@ -59,7 +58,6 @@ class TestProductRatingProduct():
         rating.delete()
         assert Product.objects.filter(pk=product.pk).exists()
 
-
     @pytest.mark.django_db
     def test_product_delete_cascades_to_ratings(self, user, save_and_clean):
         country = Country(name="Россия")
@@ -82,7 +80,6 @@ class TestProductRatingProduct():
         save_and_clean(rating)
         product.delete()
         assert not ProductRating.objects.filter(pk=rating.pk).exists()
-
 
     @pytest.mark.django_db
     def test_productrating_change_product(self, user, save_and_clean):
@@ -117,7 +114,6 @@ class TestProductRatingProduct():
         rating.product = product2
         save_and_clean(rating)
         assert rating.product == product2
-
 
     @pytest.mark.django_db
     def test_multiple_ratings_for_one_product(self, user, user2, save_and_clean):

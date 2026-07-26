@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock, call, patch
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.db import IntegrityError
@@ -8,14 +7,16 @@ from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 from kombu.exceptions import OperationalError
 
-from accounts.forms import (ChangeEmailUser, ChangePasswordForm,
-                            EmailVerificationCode, LoginForm, SignUpUserForm)
+from accounts.forms import (
+    ChangeEmailUser,
+    ChangePasswordForm,
+    EmailVerificationCode,
+)
 from accounts.models import CustomUser
-from accounts.tasks import send_email_task
 from accounts.tests.factories import UserFactory
 from accounts.utils.cache_manager import CacheError
-from accounts.utils.mailer import Mailer, MailerError
-from accounts.views import MAX_ATTEMPTS, send_email_task
+from accounts.utils.mailer import MailerError
+from accounts.views import MAX_ATTEMPTS
 
 User = get_user_model()
 
@@ -272,7 +273,7 @@ class TestVerificationChangePassword(ViewBaseMixin, TestCase):
         mock_cache = self.mock_cache_cls.return_value
         mock_cache.cache_get.return_value = "valid_data"
 
-        response = self._post()
+        self._post()
 
         mock_cache.cache_get.assert_called_once_with("password_change")
 
@@ -538,7 +539,10 @@ class TestSignUpUser(TestCase):
 
         delay_mock.assert_called_once_with(
             subject="Успешная регистрация",
-            message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
+            message=(
+                "Вы были успешно зарегистрированы! "
+                "Если это были не вы, пожалуйста, напишите нам"
+            ),
             recipient_list=["valid_mail@inbox.com"],
             log_context="SIGN_UP",
         )
@@ -572,7 +576,10 @@ class TestSignUpUser(TestCase):
 
         delay_mock.assert_called_once_with(
             subject="Успешная регистрация",
-            message="Вы были успешно зарегистрированы! Если это были не вы, пожалуйста, напишите нам",
+            message=(
+                "Вы были успешно зарегистрированы! "
+                "Если это были не вы, пожалуйста, напишите нам"
+            ),
             recipient_list=["valid_mail@inbox.com"],
             log_context="SIGN_UP",
         )

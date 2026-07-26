@@ -1,7 +1,8 @@
-from rate_food import views
 from django.urls import path
 
-app_name = 'rate_food'
+from rate_food import views
+
+app_name = "rate_food"
 
 urlpatterns = [
     path("add_rate/", views.RateProductView.as_view(), name="add_rate"),

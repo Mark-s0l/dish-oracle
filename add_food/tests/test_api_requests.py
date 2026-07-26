@@ -3,7 +3,11 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from add_food.services import api_request, ApiError, ProductNotFoundError, ResponseTimeOutError, ResponseConnectionError, ValueReadingJsonError
+from add_food.services import (
+    ApiError,
+    ProductNotFoundError,
+    api_request,
+)
 
 
 @pytest.fixture
@@ -47,6 +51,7 @@ def test_api_invalid_json(mock_requests_get):
 
     with pytest.raises(ApiError):
         api_request("4607145590012")
+
 
 def test_api_timeout(mock_requests_get):
     mock_requests_get.side_effect = requests.exceptions.Timeout()

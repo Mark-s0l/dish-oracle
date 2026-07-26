@@ -4,7 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from food_hub.models import Category, Company, Country, Product, ProductRating, TasteTag
+from food_hub.models import Category, Company, Country, Product, ProductRating
 
 
 @pytest.fixture
@@ -20,6 +20,7 @@ def company(db, country):
 @pytest.fixture
 def category(db):
     return Category.objects.create(name="Десерты")
+
 
 @pytest.fixture
 def product(db, company, category):
@@ -48,11 +49,7 @@ class TestProductRating:
         ],
     )
     def test_rate_validation(self, product, rate, user, expectation, save_and_clean):
-        rating = ProductRating(
-            product=product,
-            rate=rate,
-            user=user
-        )
+        rating = ProductRating(product=product, rate=rate, user=user)
         with expectation:
             save_and_clean(rating)
 
