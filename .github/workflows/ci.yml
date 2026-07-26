@@ -50,11 +50,6 @@ jobs:
       - run: flake8
 
       - run: pytest --cov --cov-report=term-missing
-
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
         env:
           DEBUG: "True"
           SECRET_KEY: spicy-secret-key-for-ci
@@ -73,3 +68,8 @@ jobs:
           CELERY_BROKER_URL: redis://127.0.0.1:6379/1
           EAN_DB_API_URL: https://ean-db.com/api/v2/product/
           EAN_DB_JWT: spice-jwt-for-ci
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
